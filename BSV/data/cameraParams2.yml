@@ -1,0 +1,15 @@
+%YAML:1.0
+imageSize:
+   - 0
+   - 0
+cameraMatrix: !!opencv-matrix
+   rows: 0
+   cols: 0
+   dt: u
+   data: []
+distortionCoefficients: !!opencv-matrix
+   rows: 0
+   cols: 0
+   dt: u
+   data: []
+nImages: 0

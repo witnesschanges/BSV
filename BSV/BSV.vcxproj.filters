@@ -23,6 +23,24 @@
       <Filter>资源文件</Filter>
     </None>
     <None Include="ClassDiagram1.cd" />
+    <None Include="res\bitmap1.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="C:\Users\Administrator\Desktop\1.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="C:\Users\Administrator\Desktop\2.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="bmp\1.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="bmp\bitmap2.bmp">
+      <Filter>资源文件</Filter>
+    </None>
+    <None Include="bmp\2.bmp">
+      <Filter>资源文件</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BSV.h">
@@ -46,10 +64,40 @@
     <ClInclude Include="mscomm.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="externFunc.h">
+    <ClInclude Include="Cali_ParaDlg.h">
       <Filter>头文件</Filter>
     </ClInclude>
-    <ClInclude Include="Cali_ParaDlg.h">
+    <ClInclude Include="user_lib\global.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Stereo.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="StereoMatch.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="Calibration.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="PointCloudAnalyzer.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildDlg1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildDlg2.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildDlg3.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ChildDialog1.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="ConerDetect.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="CircleCalibration.h">
       <Filter>头文件</Filter>
     </ClInclude>
   </ItemGroup>
@@ -64,6 +112,33 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="Cali_ParaDlg.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="user_lib\global.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Stereo.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="StereoMatch.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="PointCloudAnalyzer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildDlg1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildDlg2.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildDlg3.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="ChildDialog1.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="CircleCalibration.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

@@ -49,9 +49,15 @@ void CCali_ParaDlg::OnBnClickedCalistart()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(TRUE);  
-    ((CBSVDlg*)GetParent())->row_corner_num = m_row_corner_num;
-	((CBSVDlg*)GetParent())->column_corner_num = m_column_corner_num;  
-	((CBSVDlg*)GetParent())->grid_width = m_grid_width;  
-	((CBSVDlg*)GetParent())->grid_height = m_grid_height;  
+ //   ((CBSVDlg*)GetParent())->row_corner_num = m_row_corner_num;
+	//((CBSVDlg*)GetParent())->column_corner_num = m_column_corner_num;  
+	//((CBSVDlg*)GetParent())->grid_width = m_grid_width;  
+	//((CBSVDlg*)GetParent())->grid_height = m_grid_height; 
+	//((CBSVDlg*)GetParent())->PicNum = m_PicNum; 
+	((CChildDialog1*)GetParent())->row_corner_num = m_row_corner_num;
+	((CChildDialog1*)GetParent())->column_corner_num = m_column_corner_num;  
+	((CChildDialog1*)GetParent())->grid_width = m_grid_width;  
+	((CChildDialog1*)GetParent())->grid_height = m_grid_height; 
+	((CChildDialog1*)GetParent())->PicNum = m_PicNum; 
 	OnOK();
 }

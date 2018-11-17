@@ -59,6 +59,8 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalDependencies>MVGigE.lib;vfw32.lib;comctl32.lib;zlib.lib;libjasper.lib;libjpeg.lib;libpng.lib;libtiff.lib;IlmImfd.lib;opencv_calib3d2410d.lib;opencv_contrib2410d.lib;opencv_features2d2410d.lib;opencv_core2410d.lib;opencv_flann2410d.lib;opencv_gpu2410d.lib;opencv_highgui2410d.lib;opencv_imgproc2410d.lib;opencv_legacy2410d.lib;opencv_ml2410d.lib;opencv_nonfree2410d.lib;opencv_objdetect2410d.lib;opencv_ocl2410d.lib;opencv_photo2410d.lib;opencv_stitching2410d.lib;opencv_superres2410d.lib;opencv_ts2410d.lib;opencv_video2410d.lib;opencv_videostab2410d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <StackReserveSize>
+      </StackReserveSize>
     </Link>
     <Midl>
       <MkTypLibCompatible>false</MkTypLibCompatible>
@@ -98,8 +100,14 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="bmp\1.bmp" />
+    <None Include="bmp\2.bmp" />
+    <None Include="bmp\bitmap2.bmp" />
+    <None Include="C:\Users\Administrator\Desktop\1.bmp" />
+    <None Include="C:\Users\Administrator\Desktop\2.bmp" />
     <None Include="ClassDiagram1.cd" />
     <None Include="ReadMe.txt" />
+    <None Include="res\bitmap1.bmp" />
     <None Include="res\BSV.ico" />
     <None Include="res\BSV.rc2" />
   </ItemGroup>
@@ -107,21 +115,40 @@
     <ClInclude Include="BSV.h" />
     <ClInclude Include="BSVDlg.h" />
     <ClInclude Include="Cali_ParaDlg.h" />
-    <ClInclude Include="externFunc.h" />
+    <ClInclude Include="Calibration.h" />
+    <ClInclude Include="ChildDialog1.h" />
+    <ClInclude Include="ChildDlg1.h" />
+    <ClInclude Include="ChildDlg2.h" />
+    <ClInclude Include="ChildDlg3.h" />
+    <ClInclude Include="CircleCalibration.h" />
+    <ClInclude Include="ConerDetect.h" />
     <ClInclude Include="FeatureDetect.h" />
     <ClInclude Include="mscomm.h" />
+    <ClInclude Include="PointCloudAnalyzer.h" />
     <ClInclude Include="Resource.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="Stereo.h" />
+    <ClInclude Include="StereoMatch.h" />
     <ClInclude Include="targetver.h" />
+    <ClInclude Include="user_lib\global.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="BSV.cpp" />
     <ClCompile Include="BSVDlg.cpp" />
     <ClCompile Include="Cali_ParaDlg.cpp" />
+    <ClCompile Include="ChildDialog1.cpp" />
+    <ClCompile Include="ChildDlg1.cpp" />
+    <ClCompile Include="ChildDlg2.cpp" />
+    <ClCompile Include="ChildDlg3.cpp" />
+    <ClCompile Include="CircleCalibration.cpp" />
+    <ClCompile Include="PointCloudAnalyzer.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Stereo.cpp" />
+    <ClCompile Include="StereoMatch.cpp" />
+    <ClCompile Include="user_lib\global.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="BSV.rc" />
