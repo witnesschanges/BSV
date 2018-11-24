@@ -1,15 +1,90 @@
 %YAML:1.0
 imageSize:
-   - 0
-   - 0
+   - 1600
+   - 1200
 cameraMatrix: !!opencv-matrix
-   rows: 0
-   cols: 0
-   dt: u
-   data: []
+   rows: 3
+   cols: 3
+   dt: d
+   data: [ 3.9607640698767673e+003, 0., 7.4938223310896137e+002, 0.,
+       3.9614785178627908e+003, 6.6665214292205087e+002, 0., 0., 1. ]
 distortionCoefficients: !!opencv-matrix
-   rows: 0
-   cols: 0
-   dt: u
-   data: []
-nImages: 0
+   rows: 1
+   cols: 5
+   dt: d
+   data: [ -9.4988441323376097e-002, 1.2317802843027752e+000,
+       4.2488543332926450e-003, -4.1825229641270969e-003,
+       -1.8729794732423116e+001 ]
+nImages: 6
+rotaionMatrix_0: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ -2.1011828149390905e+000, 2.2362812951104312e+000,
+       4.1913232685447449e-001 ]
+rotaionMatrix_1: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ -2.0349453150835344e+000, 2.1362679668562672e+000,
+       1.8756086590828641e-001 ]
+rotaionMatrix_2: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 1.9898009655228832e+000, -2.1525048331157519e+000,
+       -6.8023804593925807e-001 ]
+rotaionMatrix_3: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 2.0180087222534402e+000, -2.0709423755787735e+000,
+       -1.1961349892306261e-001 ]
+rotaionMatrix_4: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 1.9175428258112750e+000, -1.9137051731055568e+000,
+       -3.5308358235138115e-001 ]
+rotaionMatrix_5: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 1.9386045951879254e+000, -1.9418672976387543e+000,
+       1.7794402156002842e-001 ]
+translationMatrix_0: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 2.0906841090687294e+002, 1.0289929247681657e+002,
+       1.1370932287873213e+003 ]
+translationMatrix_1: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 1.8777059322298481e+002, 1.0298092690899917e+002,
+       1.1588824503977248e+003 ]
+translationMatrix_2: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 2.0442495915941370e+002, 1.0342748544617372e+002,
+       1.1318951549910535e+003 ]
+translationMatrix_3: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 2.2307833625526359e+002, 9.6505952873257030e+001,
+       1.2184855805349921e+003 ]
+translationMatrix_4: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 2.1270985043655008e+002, 9.7784942415709551e+001,
+       1.2045664057158920e+003 ]
+translationMatrix_5: !!opencv-matrix
+   rows: 3
+   cols: 1
+   dt: d
+   data: [ 2.4875783687746659e+002, 9.4618347319298323e+001,
+       1.2362738378542781e+003 ]

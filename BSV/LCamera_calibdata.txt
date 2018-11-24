@@ -1,2 +1,6 @@
 ..\BSV\Ori_LImage\chess1.bmp
 ..\BSV\Ori_LImage\chess2.bmp
+..\BSV\Ori_LImage\chess3.bmp
+..\BSV\Ori_LImage\chess4.bmp
+..\BSV\Ori_LImage\chess5.bmp
+..\BSV\Ori_LImage\chess6.bmp

@@ -122,7 +122,7 @@ void Calibration(string PicPath,string Cali_Result,int row_corner_num,
 	ifstream fin(PicPath);//存在空白行会报错
 	ofstream fout(Cali_Result);
 	Size image_size;
-	Size board_size=Size(row_corner_num,column_corner_num);/* 标定板上每行、列的角点数 */
+	Size board_size=Size(column_corner_num,row_corner_num);/* 标定板上每行、列的角点数 */
 	vector<Point2f> image_points_buf;  /* 缓存每幅图像上检测到的角点 */
 	vector<vector<Point2f>> image_points_seq; /* 保存检测到的所有角点 */
 	string filename;

@@ -8,6 +8,7 @@
 #include "opencv2/calib3d/calib3d.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "opencv2/nonfree/features2d.hpp"
+#include "stereo.h"
 #include "global.h"
 #include <iostream>
 #include <fstream> 
@@ -35,19 +36,19 @@ void CircleCalibration(string PicPath,string Cali_Result,int row_corner_num,
 /*
  *函数功能：释放BlobSeq中的Blob数据内存，清除BlobSeq中的数据
  *参数说明
- CArray<Blob> m_LeftBlobSeq	待释放内存的左相机团块队列。
+ CArray<Blob> BlobSeq	待释放内存的左相机团块队列。
  */
 /*左相机*/
-void Blob_ReleaseLeftBlobSeq();
+void Blob_ReleaseBlobSeq();
 
 /*
  *函数功能：清除团块队列中面积不在指定范围内的团块数据
  *参数说明
- CArray<Blob> m_LeftBlobSeq     待处理的团块队列
+ CArray<Blob> BlobSeq     待处理的团块队列
  int MinArea,MaxArea    指定的团块面积范围
 */
 /*左相机*/
-void Blob_DenoisingLeftArea(int MinArea, int MaxArea);
+void Blob_DenoisingArea(int MinArea, int MaxArea);
 
 /*
  *函数功能：检测圆形特征
@@ -59,21 +60,31 @@ void Blob_DenoisingLeftArea(int MinArea, int MaxArea);
  double Circularity            圆形度
 */
 /*左相机*/
-void Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh, 
+void Detect_CircleDetect(InputArray SrcImg, double lowthresh, 
 	double highthresh, double AspectRatio, double Circularity);
 
 /*
  *函数功能：对圆形标志点进行排序
  *参数说明
  vector<Point2f> buff         待排序的圆心坐标
+ 函数返回：排序后的圆心坐标
 */
-void CircleSort(vector<Point2f> buff);
+vector<Point2f> CircleSort(vector<Point2f> buff,vector<Point2f> Bigbuff);
 
 /*
- *函数功能：计算两点之间的距离里
+ *函数功能：计算两点之间的距离
  *参数说明
- vector<Point2f> buff         待计算的圆心坐标
+ vector<Point2f> buff         待计算的圆心坐标集
  int a					      坐标序号
  int b                        坐标序号
 */
 int CalDistance(vector<Point2f> buff,int a,int b);
+
+/*
+ *函数功能：执行双目标定。注意：双目标定需要在执行了左右相机的标定后进行
+ *参数说明
+ CString LCalibdataPath			左相机图片数据
+ CString RCalibdataPath			右相机图片数据
+ CString SCaliFile				双目标定数据保存文件名
+*/
+void StereoCircleCalibration(CString LCalibdataPath,CString RCalibdataPath,CString SCaliFile);

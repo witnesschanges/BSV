@@ -111,9 +111,6 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
-    <ClCompile Include="Cali_ParaDlg.cpp">
-      <Filter>源文件</Filter>
-    </ClCompile>
     <ClCompile Include="user_lib\global.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
@@ -139,6 +136,9 @@
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="CircleCalibration.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="Cali_ParaDlg.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
   </ItemGroup>

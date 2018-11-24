@@ -1,30 +1,37 @@
-﻿生成启动时间为 2018/11/15 21:18:45。
+﻿生成启动时间为 2018/11/22 20:16:49。
      1>项目“E:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\BSV\BSV\BSV.vcxproj”在节点 2 上(build 个目标)。
      1>InitializeBuildStatus:
          正在创建“Debug\BSV.unsuccessfulbuild”，因为已指定“AlwaysCreate”。
        ClCompile:
          所有输出均为最新。
-         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\BSV.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt ChildDialog1.cpp CircleCalibration.cpp
+         D:\Program Files (x86)\Microsoft Visual Studio 10.0\VC\bin\CL.exe /c /ZI /nologo /W3 /WX- /Od /Oy- /D WIN32 /D _WINDOWS /D _DEBUG /D _MBCS /Gm /EHsc /RTC1 /MTd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Yu"StdAfx.h" /Fp"Debug\BSV.pch" /Fo"Debug\\" /Fd"Debug\vc100.pdb" /Gd /TP /analyze- /errorReport:prompt CircleCalibration.cpp
          CircleCalibration.cpp
      1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\featuredetect.h(66): warning C4091: “typedef ”: 没有声明变量时忽略“Blob”的左侧
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(58): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(59): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(95): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(96): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(121): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(184): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(297): warning C4244: “=”: 从“double”转换到“long”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(298): warning C4244: “=”: 从“double”转换到“long”，可能丢失数据
-         正在生成代码...
-         正在编译...
-         ChildDialog1.cpp
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\featuredetect.h(66): warning C4091: “typedef ”: 没有声明变量时忽略“Blob”的左侧
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\calibration.h(215): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\calibration.h(215): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\calibration.h(234): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\calibration.h(235): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
-     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\calibration.h(265): warning C4018: “<”: 有符号/无符号不匹配
-         正在生成代码...
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(68): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(69): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(97): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(98): warning C4244: “=”: 从“double”转换到“float”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(124): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(124): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(142): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(143): warning C4244: “=”: 从“int”转换到“float”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(172): warning C4018: “<”: 有符号/无符号不匹配
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(326): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(328): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(328): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(330): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(330): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(330): warning C4244: “参数”: 从“double”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(390): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(468): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(471): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(477): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(485): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(511): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(520): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(538): warning C4244: “=”: 从“float”转换到“int”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(611): warning C4244: “=”: 从“double”转换到“long”，可能丢失数据
+     1>e:\课题学习\1-双棱镜及相关视觉理论\3-双目视觉软件\1-软件开发\bsv\bsv\circlecalibration.cpp(612): warning C4244: “=”: 从“double”转换到“long”，可能丢失数据
        ResourceCompile:
          所有输出均为最新。
        ManifestResourceCompile:
@@ -58,4 +65,4 @@
 
 生成成功。
 
-已用时间 00:00:05.22
+已用时间 00:00:25.03

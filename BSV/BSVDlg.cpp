@@ -211,6 +211,7 @@ BEGIN_MESSAGE_MAP(CBSVDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_FaceDetect, &CBSVDlg::OnBnClickedFacedetect)
 	ON_WM_SIZE()
 //	ON_BN_CLICKED(IDC_BUTTON20, &CBSVDlg::OnBnClickedButton20)
+//ON_BN_CLICKED(IDC_Open2Camera2, &CBSVDlg::OnBnClickedCircleStereocalibration)
 END_MESSAGE_MAP()
 
 

@@ -36,4 +36,5 @@ public:
 	int PicNum;					//需要标定图片的数量
 	
 	afx_msg void OnBnClickedButton9();
+	afx_msg void OnBnClickedButton21();
 };

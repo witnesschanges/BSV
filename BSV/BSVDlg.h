@@ -203,4 +203,5 @@ public://lq:以afx_msg打头的是消息处理函数
 	afx_msg void OnSize(UINT nType, int cx, int cy);
 	void ChangeSize(CWnd *pWnd, int cx, int cy);
 //	afx_msg void OnBnClickedButton20();
+//	afx_msg void OnBnClickedCircleStereocalibration();
 };
