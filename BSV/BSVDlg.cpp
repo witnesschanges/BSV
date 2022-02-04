@@ -77,9 +77,9 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 	m_LeftDIBBits = NULL;
 	m_LeftShowDIBBits = NULL;
 
-	m_LeftWidth = 0;      
-	m_LeftHeight = 0;     
-	m_LeftOriWidth = 1600;  
+	m_LeftWidth = 0;
+	m_LeftHeight = 0;
+	m_LeftOriWidth = 1600;
 	m_LeftOriHeight = 1200;
 
 	m_nLBit = 8;
@@ -113,9 +113,9 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 	m_RightDIBBits = NULL;
 	m_RightShowDIBBits = NULL;
 
-	m_RightWidth = 0;      
-	m_RightHeight = 0;     
-	m_RightOriWidth = 1600;  
+	m_RightWidth = 0;
+	m_RightHeight = 0;
+	m_RightOriWidth = 1600;
 	m_RightOriHeight = 1200;
 
 	m_nRBit = 8;
@@ -217,12 +217,12 @@ BOOL CBSVDlg::OnInitDialog()
 	//固定Picture Control控件的大小
 	CRect rectL;  
 	GetDlgItem(IDC_LeftPic)->GetWindowRect(&rectL);
-	ScreenToClient(&rectL);  
+	ScreenToClient(&rectL);
 	GetDlgItem(IDC_LeftPic)->MoveWindow(rectL.left, rectL.top, 520, 390, true);
 
 	CRect rectR;  
 	GetDlgItem(IDC_RightPic)->GetWindowRect(&rectR);
-	ScreenToClient(&rectR);  
+	ScreenToClient(&rectR);
 	GetDlgItem(IDC_RightPic)->MoveWindow(rectR.left, rectR.top, 520, 390, true);
 
 	GetDlgItem(IDC_CapVideo)->EnableWindow(false);
@@ -248,7 +248,7 @@ void CBSVDlg::OnClose()
 	}
 
 	delete[] m_RightShowDIBBits;
-	m_LeftShowDIBBits = NULL;	
+	m_LeftShowDIBBits = NULL;
 	delete[] m_LeftDIBBits;
 	m_LeftDIBBits = NULL;
 	delete[] m_LeftOriDIBBits;
@@ -531,7 +531,7 @@ void CBSVDlg::OnBnClickedOpencamera()
 	MVSTATUS_CODES hr;
 	if (m_pLCamera == NULL)	//启动相机
 	{
-		hr = MVOpenCamByIndex(0, &m_pLCamera );		
+		hr = MVOpenCamByIndex(0, &m_pLCamera );
 		if (hr != MVST_SUCCESS)
 		{
 			MessageBox("未找到相机，请确认设备连接和IP设置！","BSV",MB_ICONWARNING);
@@ -546,8 +546,8 @@ void CBSVDlg::OnBnClickedOpencamera()
 	}
 	else	//关闭相机
 	{
-		hr = MVStopGrab(m_pLCamera);		 
-		hr = MVCloseCam(m_pLCamera);	
+		hr = MVStopGrab(m_pLCamera);
+		hr = MVCloseCam(m_pLCamera);
 		m_pLCamera = NULL;
 
 		GetDlgItem(IDC_OpenCamera)->SetWindowText("启动相机");
@@ -584,22 +584,22 @@ void CBSVDlg::OnBnClickedCapvideo()
 			m_pLBmpInfo->bmiHeader.biHeight = m_LeftOriHeight;
 
 			//为图像显示的图像数据分配内存空间
-			delete[] m_LeftShowDIBBits;	
-			m_LeftShowDIBBits = NULL;	
+			delete[] m_LeftShowDIBBits;
+			m_LeftShowDIBBits = NULL;
 			m_LeftShowDIBBits = new char[m_LeftOriWidth * m_LeftOriHeight * (m_nLBit/8)];
 
-			delete[] m_LeftOriDIBBits;	
-			m_LeftOriDIBBits = NULL;						
+			delete[] m_LeftOriDIBBits;
+			m_LeftOriDIBBits = NULL;
 			m_LeftOriDIBBits = new char[m_LeftOriWidth * m_LeftOriHeight * (m_nLBit/8)];
 
 			//为进行处理的图像赋值
-			m_LeftRectLeft=0;  
+			m_LeftRectLeft=0;
 			m_LeftRectBottom=0;
-			m_LeftWidth=m_LeftOriWidth; 
+			m_LeftWidth=m_LeftOriWidth;
 			m_LeftHeight=m_LeftOriHeight;
 
-			delete[] m_LeftDIBBits;	
-			m_LeftDIBBits = NULL;					
+			delete[] m_LeftDIBBits;
+			m_LeftDIBBits = NULL;
 			m_LeftDIBBits = new char[m_LeftWidth * m_LeftHeight * (m_nLBit/8)];
 
 			//开始采集图像后，不再接受更新的“连续采集”指令
@@ -725,9 +725,9 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 			GaussianBlur(RSrcImg, RFilImg, Size(7,7), 0, 0);
 
 			Mat RBinImg;
-			//自适应阈值分割图像	
-			//adaptiveThreshold(RFilImg, RBinImg, 255, CV_ADAPTIVE_THRESH_MEAN_C, 
-			//CV_THRESH_BINARY, 7, 5);	
+			//自适应阈值分割图像
+			//adaptiveThreshold(RFilImg, RBinImg, 255, CV_ADAPTIVE_THRESH_MEAN_C,
+			//CV_THRESH_BINARY, 7, 5);
 			//固定阈值分割图像 lq:二值化图像
 			threshold(RFilImg, RBinImg, 100, 255, CV_THRESH_BINARY);
 			
@@ -756,7 +756,7 @@ void CBSVDlg::OnBnClickedOpencamera2()
 	MVSTATUS_CODES hr;
 	if (m_pRCamera == NULL)	//启动相机
 	{
-		hr = MVOpenCamByIndex(1, &m_pRCamera );		
+		hr = MVOpenCamByIndex(1, &m_pRCamera );
 		if (hr != MVST_SUCCESS)
 		{
 			MessageBox("未找到相机，请确认设备连接和IP设置！","BSV",MB_ICONWARNING);
@@ -771,8 +771,8 @@ void CBSVDlg::OnBnClickedOpencamera2()
 	}
 	else	//关闭相机
 	{
-		hr = MVStopGrab(m_pRCamera);		 
-		hr = MVCloseCam(m_pRCamera);	
+		hr = MVStopGrab(m_pRCamera);
+		hr = MVCloseCam(m_pRCamera);
 		m_pRCamera = NULL;
 
 		GetDlgItem(IDC_OpenCamera2)->SetWindowText("启动相机");
@@ -809,22 +809,22 @@ void CBSVDlg::OnBnClickedCapvideo2()
 			m_pRBmpInfo->bmiHeader.biHeight = m_RightOriHeight;
 
 			//为图像显示的图像数据分配内存空间
-			delete[] m_RightShowDIBBits;	
-			m_RightShowDIBBits = NULL;	
+			delete[] m_RightShowDIBBits;
+			m_RightShowDIBBits = NULL;
 			m_RightShowDIBBits = new char[m_RightOriWidth * m_RightOriHeight * (m_nRBit/8)];
 
-			delete[] m_RightOriDIBBits;	
-			m_RightOriDIBBits = NULL;						
+			delete[] m_RightOriDIBBits;
+			m_RightOriDIBBits = NULL;
 			m_RightOriDIBBits = new char[m_RightOriWidth * m_RightOriHeight * (m_nRBit/8)];
 
 			//为进行处理的图像赋值
 			m_RightRectLeft=0;
 			m_RightRectBottom=0;
-			m_RightWidth=m_RightOriWidth; 
+			m_RightWidth=m_RightOriWidth;
 			m_RightHeight=m_RightOriHeight;
 
-			delete[] m_RightDIBBits;	
-			m_RightDIBBits = NULL;					
+			delete[] m_RightDIBBits;
+			m_RightDIBBits = NULL;
 			m_RightDIBBits = new char[m_RightWidth * m_RightHeight * (m_nRBit/8)];
 
 			//开始采集图像后，不再接受更新的“连续采集”指令
@@ -928,7 +928,7 @@ void CBSVDlg::Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh,
 			cir = (12.56*area)/(length*length);		//第i个轮廓的圆形度
 			if (cir > Circularity)
 			{
-				rect = fitEllipse(contours[i]);    
+				rect = fitEllipse(contours[i]);
 				width = rect.size.width;	//外接矩形的宽度
 				height = rect.size.height;	//外接矩形的高度
 				asp = height/width;			//纵横比
@@ -979,7 +979,7 @@ void CBSVDlg::Detect_RightCircleDetect(InputArray SrcImg, double lowthresh,
 			cir = (12.56*area)/(length*length);		//第i个轮廓的圆形度
 			if (cir > Circularity)
 			{
-				rect = fitEllipse(contours[i]);    
+				rect = fitEllipse(contours[i]);
 				width = rect.size.width;	//外接矩形的宽度
 				height = rect.size.height;	//外接矩形的高度
 				asp = height/width;			//纵横比
@@ -1093,7 +1093,7 @@ void CBSVDlg::ShowLeftCircles()
 		{
 			y = rc.Height()-6;
 		}
-		pdc->Ellipse(x-5, y-5, x+5, y+5);			
+		pdc->Ellipse(x-5, y-5, x+5, y+5);
 	}
 
 	pdc->SelectObject(pOldBrush);
@@ -1138,7 +1138,7 @@ void CBSVDlg::ShowRightCircles()
 		{
 			y = rc.Height()-6;
 		}
-		pdc->Ellipse(x-5, y-5, x+5, y+5);			
+		pdc->Ellipse(x-5, y-5, x+5, y+5);
 	}
 
 	pdc->SelectObject(pOldBrush);
@@ -1626,8 +1626,6 @@ void CBSVDlg::OnBnClickedSavepic2()
 	RfilePath+= ".bmp";
 	imwrite(RfilePath,RImg);
 }
-
-
 
 //void CBSVDlg::OnBnClickedButton2()
 //{
