@@ -1,19 +1,18 @@
 
 // BSVDlg.cpp : 实现文件
 //
-
+#include <iostream>
+#include <math.h>
 #include "stdafx.h"
 #include "BSV.h"
 #include "BSVDlg.h"
 #include "afxdialogex.h"
-#include "math.h"
 #include "opencv2/core/core.hpp"
 #include "opencv2/opencv.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
 #include "externFunc.h"
 #include "Cali_ParaDlg.h"
-#include <iostream>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW

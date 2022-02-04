@@ -3,12 +3,12 @@
 //
 
 #pragma once
-#include "afxwin.h"
+#include <afxwin.h>
 #include "MVGigE.h"
 #include "MVImage.h"
-#include "opencv2\opencv.hpp"
-#include "opencv2\core\core.hpp"
-#include "opencv2\highgui\highgui.hpp"
+#include "opencv2/opencv.hpp"
+#include "opencv2/core/core.hpp"
+#include "opencv2/highgui/highgui.hpp"
 #include "FeatureDetect.h"
 #include "mscomm.h"
 
