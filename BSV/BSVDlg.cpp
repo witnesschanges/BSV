@@ -64,7 +64,7 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 
 	g_pBSVDlg = this;
 	 
-	m_pLCamera = NULL;
+	m_LeftCamera.CameraHandle = NULL;
 	m_bLBufHandle = false;
 
 	m_LeftOriDIBBits = NULL;
@@ -232,11 +232,11 @@ void CBSVDlg::OnClose()
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	//释放内存资源
-	if (m_pLCamera != NULL)
+	if (m_LeftCamera.CameraHandle != NULL)
 	{
-		MVStopGrab(m_pLCamera);
-		MVCloseCam(m_pLCamera);
-		m_pLCamera = NULL;
+		MVStopGrab(m_LeftCamera.CameraHandle);
+		MVCloseCam(m_LeftCamera.CameraHandle);
+		m_LeftCamera.CameraHandle = NULL;
 	}
 
 	delete[] m_RightShowDIBBits;
@@ -343,7 +343,7 @@ int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 		else
 		{
 			int count = (((g_pBSVDlg->m_LeftOriWidth*g_pBSVDlg->m_nLBit)+31)/32)*4;
-			MVBayerToBGR(g_pBSVDlg->m_pLCamera,pInfo->pImageBuffer,g_pBSVDlg->m_LeftOriDIBBits,count,
+			MVBayerToBGR(g_pBSVDlg->m_LeftCamera.CameraHandle,pInfo->pImageBuffer,g_pBSVDlg->m_LeftOriDIBBits,count,
 				g_pBSVDlg->m_LeftOriWidth,g_pBSVDlg->m_LeftOriHeight,g_pBSVDlg->m_LPixelFormat);
 		}
 
@@ -520,9 +520,9 @@ void CBSVDlg::OnBnClickedOpencamera()
 	// TODO: 在此添加控件通知处理程序代码
 	//启动左相机	
 	MVSTATUS_CODES hr;
-	if (m_pLCamera == NULL)	//启动相机
+	if (m_LeftCamera.CameraHandle == NULL)	//启动相机
 	{
-		hr = MVOpenCamByIndex(0, &m_pLCamera );
+		hr = MVOpenCamByIndex(0, &m_LeftCamera.CameraHandle );
 		if (hr != MVST_SUCCESS)
 		{
 			MessageBox("未找到相机，请确认设备连接和IP设置！","BSV",MB_ICONWARNING);
@@ -537,9 +537,9 @@ void CBSVDlg::OnBnClickedOpencamera()
 	}
 	else	//关闭相机
 	{
-		hr = MVStopGrab(m_pLCamera);
-		hr = MVCloseCam(m_pLCamera);
-		m_pLCamera = NULL;
+		hr = MVStopGrab(m_LeftCamera.CameraHandle);
+		hr = MVCloseCam(m_LeftCamera.CameraHandle);
+		m_LeftCamera.CameraHandle = NULL;
 
 		GetDlgItem(IDC_OpenCamera)->SetWindowText("启动相机");
 		GetDlgItem(IDC_CapVideo)->EnableWindow(false);
@@ -550,11 +550,11 @@ void CBSVDlg::OnBnClickedOpencamera()
 void CBSVDlg::OnBnClickedCapvideo()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_pLCamera != NULL)
+	if (m_LeftCamera.CameraHandle != NULL)
 	{
-		MVGetWidth(m_pLCamera, &m_LeftOriWidth);  //获得图像长宽
-		MVGetHeight(m_pLCamera,&m_LeftOriHeight);
-		MVGetPixelFormat(m_pLCamera,&m_LPixelFormat);  //获得数据格式
+		MVGetWidth(m_LeftCamera.CameraHandle, &m_LeftOriWidth);  //获得图像长宽
+		MVGetHeight(m_LeftCamera.CameraHandle,&m_LeftOriHeight);
+		MVGetPixelFormat(m_LeftCamera.CameraHandle,&m_LPixelFormat);  //获得数据格式
 		if( m_LPixelFormat == PixelFormat_Mono8 )
 		{
 			m_nLBit = 8;
@@ -565,7 +565,7 @@ void CBSVDlg::OnBnClickedCapvideo()
 		}
 		
 		MVSTATUS_CODES hr;
-		hr =  MVStartGrab(m_pLCamera, LeftCallbackFunction, (long)this); //设置回调函数
+		hr =  MVStartGrab(m_LeftCamera.CameraHandle, LeftCallbackFunction, (long)this); //设置回调函数
 		if (hr == MVST_SUCCESS)
 		{	
 			//原始图像
@@ -602,7 +602,7 @@ void CBSVDlg::OnBnClickedCapvideo()
 void CBSVDlg::OnBnClickedSetcamera()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if(m_pLCamera == NULL )
+	if(m_LeftCamera.CameraHandle == NULL )
 	{
 		MessageBox("尚未启动相机，无法配置！","BSV",MB_ICONWARNING);
 	}
@@ -1548,7 +1548,7 @@ void CBSVDlg::OnBnClickedSavepic()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	//保存图像在Ori_LImage中，并为图片命名Lchess*.bmp
-	if(m_pLCamera == NULL)
+	if(m_LeftCamera.CameraHandle == NULL)
 	{
 		AfxMessageBox("没有打开左相机");
 		return;

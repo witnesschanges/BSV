@@ -18,6 +18,34 @@ using namespace cv;
 #define WaitOutTime 3000
 #define pi 3.141592653
 
+class Camera
+{
+public:
+	HANDLE CameraHandle;//相机句柄
+	CCriticalSection Section;//相机采图临界区
+	CCriticalSection SectionCopy;//相机采图临界区
+	int ImageIndex;//相机采集图片序号标志
+	/*CPtrArray BlobSeq;*/
+	CArray<Blob> BlobSeq;//记录相机圆形特征中心坐标
+	MV_PixelFormatEnums PixelFormat;//相机图像格式
+};
+
+class Image
+{
+	BITMAPINFO* BmpInfo;//图像信息头指针
+	LPSTR OriDIBBits;//原始图像，从图像文件读入或相机中直接获取。灰度图像，如果是RGB直接转化为8位灰度图
+	LPSTR DIBBits;//要进行处理的图像，有可能是整幅图像也有可能是原始图像的一个区域
+	LPSTR ShowDIBBits;//要进行显示的图像
+	LONG Width;//要进行处理的图像的宽度，如果对图像区域进行处理，该宽度与原始图像的宽度是不同的
+	LONG Height;//要进行处理的图像的高度，如果对图像区域进行处理，该宽度与原始图像的宽度是不同的
+	LONG RectLeft;//图像选择区域的左边界
+	LONG RectBottom;//图像选择区域的下边界
+	int Bit;//图像位数
+	int OriWidth;//图像原始宽度
+	int OriHeight;//图像原始高度
+	BOOL BufHandle;//图像可以进行处理标识,当每次调用左相机回调函数是,该标记置true,当对图像进行处理时,该标记置false
+};
+
 // CBSVDlg 对话框
 class CBSVDlg : public CDialogEx
 {
@@ -29,6 +57,8 @@ public:
 	enum { IDD = IDD_BSV_DIALOG };
 
 public:
+	Camera m_LeftCamera;
+
 	HANDLE m_pLCamera;		//左相机
 	BITMAPINFO  *m_pLBmpInfo;		    //左图像信息头指针
 	MV_PixelFormatEnums m_LPixelFormat;	//左相机图像格式
