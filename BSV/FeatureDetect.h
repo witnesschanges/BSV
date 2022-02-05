@@ -64,5 +64,3 @@ typedef struct  Blob		//团块结构，用于记录各个团块的几何特征值
 		return *this;
 	}
 };
-
-

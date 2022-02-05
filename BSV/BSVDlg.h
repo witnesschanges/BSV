@@ -6,11 +6,11 @@
 #include <afxwin.h>
 #include "MVGigE.h"
 #include "MVImage.h"
+#include "FeatureDetect.h"
+#include "mscomm.h"
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "FeatureDetect.h"
-#include "mscomm.h"
 
 using namespace std;
 using namespace cv;
@@ -98,7 +98,6 @@ public:
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
-
 
 // 实现
 protected:

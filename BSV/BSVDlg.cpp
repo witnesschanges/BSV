@@ -51,12 +51,7 @@ void CAboutDlg::DoDataExchange(CDataExchange* pDX)
 BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
-
 // CBSVDlg 对话框
-
-
-
-
 CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 	: CDialogEx(CBSVDlg::IDD, pParent),
 	m_EVKillIAA(false, TRUE, NULL, NULL),
@@ -175,9 +170,7 @@ ON_BN_CLICKED(IDC_Calibration2, &CBSVDlg::OnBnClickedCalibration2)
 //ON_BN_CLICKED(IDC_BUTTON10, &CBSVDlg::OnBnClickedButton10)
 END_MESSAGE_MAP()
 
-
 // CBSVDlg 消息处理程序
-
 BOOL CBSVDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
@@ -288,7 +281,6 @@ void CBSVDlg::OnSysCommand(UINT nID, LPARAM lParam)
 // 如果向对话框添加最小化按钮，则需要下面的代码
 //  来绘制该图标。对于使用文档/视图模型的 MFC 应用程序，
 //  这将由框架自动完成。
-
 void CBSVDlg::OnPaint()
 {
 	if (IsIconic())
@@ -555,7 +547,6 @@ void CBSVDlg::OnBnClickedOpencamera()
 	}
 }
 
-
 void CBSVDlg::OnBnClickedCapvideo()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -608,7 +599,6 @@ void CBSVDlg::OnBnClickedCapvideo()
 	}
 }
 
-
 void CBSVDlg::OnBnClickedSetcamera()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -625,7 +615,6 @@ void CBSVDlg::OnBnClickedSetcamera()
 		MessageBox("暂无此功能");
 	}
 }
-
 
 void CBSVDlg::OnBnClickedCircledetect()
 {
@@ -780,7 +769,6 @@ void CBSVDlg::OnBnClickedOpencamera2()
 	}
 }
 
-
 void CBSVDlg::OnBnClickedCapvideo2()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -833,8 +821,6 @@ void CBSVDlg::OnBnClickedCapvideo2()
 	}
 }
 
-
-
 void CBSVDlg::OnBnClickedSetcamera2()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -858,7 +844,6 @@ void CBSVDlg::OnBnClickedOpen2camera()
 	OnBnClickedOpencamera();
 	OnBnClickedOpencamera2();
 }
-
 
 void CBSVDlg::OnBnClickedCap2video()
 {
@@ -1163,7 +1148,6 @@ void CBSVDlg::OnBnClickedCircledetect2()
 	}
 }
 
-
 void CBSVDlg::OnBnClickedStopdetect2()
 {
 	// TODO: 在此添加控件通知处理程序代码
@@ -1176,7 +1160,6 @@ void CBSVDlg::OnBnClickedStopdetect2()
 	GetDlgItem(IDC_CircleDetect2)->EnableWindow(true);
 	GetDlgItem(IDC_StopDetect2)->EnableWindow(false);
 }
-
 
 void CBSVDlg::OnBnClickedCircle2detect()
 {
@@ -1521,7 +1504,6 @@ CString format_fraction(double data)
 //   return false;
 //}
 
-
 void CBSVDlg::OnBnClickedCalibration()
 {
 	 //TODO: 在此添加控件通知处理程序代码
@@ -1593,7 +1575,6 @@ void CBSVDlg::OnBnClickedSavepic()
 	LfilePath+= ".bmp";
 	imwrite(LfilePath,LImg);
 }
-
 
 void CBSVDlg::OnBnClickedSavepic2()
 {
