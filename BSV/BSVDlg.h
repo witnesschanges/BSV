@@ -46,6 +46,17 @@ class Image
 	BOOL BufHandle;//图像可以进行处理标识,当每次调用左相机回调函数是,该标记置true,当对图像进行处理时,该标记置false
 };
 
+class Calibration
+{
+	//双目相机参数
+	BOOL m_bDMeasureDraw;//双相机显示测量结果标记,true表示显示,false表示不显示
+	int m_n2ImageIndex;//采集图像编号
+	int row_corner_num;//标定图像内角点（不和边缘接触的角点）行数
+	int column_corner_num;//标定图像内角点（不和边缘接触的角点）列数
+	int grid_width;//实际测量得到的标定板上每个棋盘格的长
+	int grid_height;//实际测量得到的标定板上每个棋盘格的宽
+};
+
 // CBSVDlg 对话框
 class CBSVDlg : public CDialogEx
 {
