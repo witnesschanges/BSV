@@ -65,6 +65,8 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 	g_pBSVDlg = this;
 	 
 	m_LeftCamera.CameraHandle = NULL;
+	m_LeftCamera.ImageIndex = 0;
+
 	m_bLBufHandle = false;
 
 	m_LeftOriDIBBits = NULL;
@@ -98,7 +100,6 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 		m_pLBmpInfo->bmiColors[i].rgbRed = i;
 		m_pLBmpInfo->bmiColors[i].rgbReserved = 0;
 	}
-	m_nLImageIndex = 0;
 	//右相机变量初始化
 	m_pRCamera = NULL;
 	m_bRBufHandle = false;
@@ -332,10 +333,10 @@ int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 	if(g_pBSVDlg->m_LeftOriDIBBits != NULL)
 	{
 		//拷贝图像内存
-		g_pBSVDlg->m_CSectionCopyL.Lock();
+		g_pBSVDlg->m_LeftCamera.SectionCopy.Lock();
 
 		//为原始图像赋值，如果是24位RGB格式，则直接转换
-		if( g_pBSVDlg->m_LPixelFormat == PixelFormat_Mono8 )
+		if( g_pBSVDlg->m_LeftCamera.PixelFormat == PixelFormat_Mono8 )
 		{
 			memcpy(g_pBSVDlg->m_LeftOriDIBBits,pInfo->pImageBuffer,
 				g_pBSVDlg->m_LeftOriWidth*g_pBSVDlg->m_LeftOriHeight);
@@ -344,7 +345,7 @@ int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 		{
 			int count = (((g_pBSVDlg->m_LeftOriWidth*g_pBSVDlg->m_nLBit)+31)/32)*4;
 			MVBayerToBGR(g_pBSVDlg->m_LeftCamera.CameraHandle,pInfo->pImageBuffer,g_pBSVDlg->m_LeftOriDIBBits,count,
-				g_pBSVDlg->m_LeftOriWidth,g_pBSVDlg->m_LeftOriHeight,g_pBSVDlg->m_LPixelFormat);
+				g_pBSVDlg->m_LeftOriWidth,g_pBSVDlg->m_LeftOriHeight,g_pBSVDlg->m_LeftCamera.PixelFormat);
 		}
 
 		LPSTR itemBits;
@@ -371,7 +372,7 @@ int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 			}
 		}
 		delete []itemBits;
-		g_pBSVDlg->m_CSectionCopyL.Unlock();
+		g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
 
 		g_pBSVDlg->m_bLBufHandle = true;//左图像可以进行处理标识
 		g_pBSVDlg->DrawLeftCamera();
@@ -442,11 +443,11 @@ int RightCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 */
 void CBSVDlg::DrawLeftCamera()
 {
-	m_CSectionL.Lock();
+	m_LeftCamera.Section.Lock();
 	CDC *pdc = GetDlgItem(IDC_LeftPic)->GetDC();//获得DC
 	CRect rc;
 	GetDlgItem(IDC_LeftPic)->GetClientRect(&rc);//获得图像显示区域
-	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR ) ;//设置模式
+	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR );//设置模式
 
 	//显示图像
 	::StretchDIBits(pdc->GetSafeHdc(), 0, 0, rc.Width(),rc.Height(),
@@ -471,7 +472,7 @@ void CBSVDlg::DrawLeftCamera()
 	//pPenBlue.DeleteObject();
 
 	GetDlgItem(IDC_LeftPic)->ReleaseDC(pdc);	
-	m_CSectionL.Unlock();
+	m_LeftCamera.Section.Unlock();
 }
 
 /*
@@ -554,8 +555,8 @@ void CBSVDlg::OnBnClickedCapvideo()
 	{
 		MVGetWidth(m_LeftCamera.CameraHandle, &m_LeftOriWidth);  //获得图像长宽
 		MVGetHeight(m_LeftCamera.CameraHandle,&m_LeftOriHeight);
-		MVGetPixelFormat(m_LeftCamera.CameraHandle,&m_LPixelFormat);  //获得数据格式
-		if( m_LPixelFormat == PixelFormat_Mono8 )
+		MVGetPixelFormat(m_LeftCamera.CameraHandle,&m_LeftCamera.PixelFormat);  //获得数据格式
+		if( m_LeftCamera.PixelFormat == PixelFormat_Mono8 )
 		{
 			m_nLBit = 8;
 		}
@@ -660,15 +661,15 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 	{
 	case 1:
 		{
-			if( m_LPixelFormat != PixelFormat_Mono8 )
+			if( m_LeftCamera.PixelFormat != PixelFormat_Mono8 )
 				return;
 
 			Mat LSrcImg;
 			LSrcImg.create(m_LeftOriHeight, m_LeftOriWidth, CV_8UC1);
 
-			g_pBSVDlg->m_CSectionCopyL.Lock();
+			g_pBSVDlg->m_LeftCamera.SectionCopy.Lock();
 			memcpy(LSrcImg.data,m_LeftShowDIBBits,m_LeftOriWidth*m_LeftOriHeight*(m_nLBit/8));
-			g_pBSVDlg->m_CSectionCopyL.Unlock();
+			g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
 	
 			Mat LFilImg;
 			//双边滤波，保边去噪
@@ -687,7 +688,7 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 			//Detect_LeftCircleDetect(LBinImg, 0, 255, 0.6, 0.6);
 			//Blob_DenoisingLeftArea(1000, 8000);
 			
-			if (!m_LeftBlobSeq.IsEmpty())
+			if (!m_LeftCamera.BlobSeq.IsEmpty())
 			{
 				ShowLeftCircles();
 			}
@@ -860,10 +861,10 @@ CPtrArray* BlobSeq	   待释放内存的团块队列。
 /*左相机*/
 void CBSVDlg::Blob_ReleaseLeftBlobSeq()
 {
-	if (!m_LeftBlobSeq.IsEmpty())
+	if (!m_LeftCamera.BlobSeq.IsEmpty())
 	{
-		m_LeftBlobSeq.RemoveAll();
-		m_LeftBlobSeq.FreeExtra();
+		m_LeftCamera.BlobSeq.RemoveAll();
+		m_LeftCamera.BlobSeq.FreeExtra();
 	}
 }
 
@@ -902,7 +903,7 @@ void CBSVDlg::Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh,
 	RotatedRect rect;
 	int cnt = 0;
 	int ln = contours.size();
-	m_LeftBlobSeq.SetSize(ln,10);
+	m_LeftCamera.BlobSeq.SetSize(ln,10);
 	for (int i=0; i<ln; i++)
 	{
 		if (contours[i].size() > 10)
@@ -928,13 +929,13 @@ void CBSVDlg::Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh,
 					pB.BlobX = rect.center.x;
 					pB.BlobY = rect.center.y;
 
-					m_LeftBlobSeq.SetAtGrow(cnt,pB);
+					m_LeftCamera.BlobSeq.SetAtGrow(cnt,pB);
 					cnt++;
 				}
 			}
 		}
 	}
-	m_LeftBlobSeq.FreeExtra();
+	m_LeftCamera.BlobSeq.FreeExtra();
 }
 
 /*右相机检测圆形*/
@@ -1003,20 +1004,20 @@ int MinArea,MaxArea    指定的团块面积范围
 /*左相机*/
 void CBSVDlg::Blob_DenoisingLeftArea(int MinArea, int MaxArea)
 {
-	if (!m_LeftBlobSeq.IsEmpty())
+	if (!m_LeftCamera.BlobSeq.IsEmpty())
 	{
-		int ln = m_LeftBlobSeq.GetSize();;
+		int ln = m_LeftCamera.BlobSeq.GetSize();;
 		for (int i=0; i<ln; i++)
 		{
-			Blob pB = m_LeftBlobSeq.GetAt(i);
+			Blob pB = m_LeftCamera.BlobSeq.GetAt(i);
 			if (pB.Area<MinArea || pB.Area>MaxArea)
 			{
-				m_LeftBlobSeq.RemoveAt(i);
+				m_LeftCamera.BlobSeq.RemoveAt(i);
 				i--;
 				ln--;
 			}
 		}
-		m_LeftBlobSeq.FreeExtra();
+		m_LeftCamera.BlobSeq.FreeExtra();
 	}
 }
 
@@ -1054,10 +1055,10 @@ void CBSVDlg::ShowLeftCircles()
 
 	double dbRateX = (double)rc.Width()/(double)m_LeftOriWidth;
 	double dbRateY = (double)rc.Height()/(double)m_LeftOriHeight;
-	int ln = m_LeftBlobSeq.GetSize();
+	int ln = m_LeftCamera.BlobSeq.GetSize();
 	for (int i=0;i<ln;i++)
 	{
-		Blob pB = m_LeftBlobSeq.GetAt(i);
+		Blob pB = m_LeftCamera.BlobSeq.GetAt(i);
 		int x, y;
 		x = (int)(pB.BlobX*dbRateX);
 		y = (int)((m_LeftOriHeight - pB.BlobY)*dbRateY);
@@ -1553,23 +1554,23 @@ void CBSVDlg::OnBnClickedSavepic()
 		AfxMessageBox("没有打开左相机");
 		return;
 	}
-	m_nLImageIndex ++;
+	m_LeftCamera.ImageIndex++;
 
-	if( m_LPixelFormat != PixelFormat_Mono8 )
+	if( m_LeftCamera.PixelFormat != PixelFormat_Mono8 )
 		return;
 	Mat LImg;
 	LImg.create(m_LeftOriHeight, m_LeftOriWidth, CV_8UC1);
 
-	g_pBSVDlg->m_CSectionCopyL.Lock();
+	g_pBSVDlg->m_LeftCamera.SectionCopy.Lock();
 	memcpy(LImg.data,m_LeftShowDIBBits,m_LeftOriWidth*m_LeftOriHeight*(m_nLBit/8));
-	g_pBSVDlg->m_CSectionCopyL.Unlock();
+	g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
 
 	std::stringstream StrStm;
 	string imageFileName;
 	StrStm.clear();
  	imageFileName.clear();
 	string LfilePath="Ori_LImage\\chess";
-	StrStm<<m_nLImageIndex;
+	StrStm << m_LeftCamera.ImageIndex;
  	StrStm>>imageFileName;
 	LfilePath += imageFileName;
 	LfilePath+= ".bmp";

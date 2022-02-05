@@ -70,9 +70,7 @@ public:
 public:
 	Camera m_LeftCamera;
 
-	HANDLE m_pLCamera;		//左相机
 	BITMAPINFO  *m_pLBmpInfo;		    //左图像信息头指针
-	MV_PixelFormatEnums m_LPixelFormat;	//左相机图像格式
 	LPSTR  m_LeftOriDIBBits;    //原始左图像，从图像文件读入或相机中直接获取。灰度图像，如果是RGB直接转化为8位灰度图
 	LPSTR  m_LeftDIBBits;		//要进行处理的左图像，有可能是整幅图像也有可能是原始图像的一个区域
 	LPSTR  m_LeftShowDIBBits;   //要进行显示的左图像
@@ -85,12 +83,8 @@ public:
 	int    m_LeftOriHeight;     //左图像原始高度
 	BOOL   m_bLBufHandle;	    //左图像可以进行处理标识,当每次调用左相机回调函数是,该标记置true,
 							    //当对左图像进行处理时,该标记置false
-	CCriticalSection  m_CSectionL;	    //左相机采图临界区
-	CCriticalSection  m_CSectionCopyL;	//左相机采图临界区
-	int m_nLImageIndex;	//左相机采集图片序号标志
 
 	/*CPtrArray m_LeftBlobSeq;*/	
-	CArray<Blob> m_LeftBlobSeq;	//记录左相机圆形特征中心坐标
 	//标定相关变量
 	BOOL   m_bLCalibDraw;//左相机显示标定位置标记,true表示显示,false表示不显示
 	CPtrArray m_LeftImgCoordSeq;//记录各个图像的标靶坐标
