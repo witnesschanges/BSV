@@ -69,6 +69,7 @@ public:
 
 public:
 	Camera m_LeftCamera;
+	Camera m_RightCamera;
 
 	BITMAPINFO  *m_pLBmpInfo;		    //左图像信息头指针
 	LPSTR  m_LeftOriDIBBits;    //原始左图像，从图像文件读入或相机中直接获取。灰度图像，如果是RGB直接转化为8位灰度图
@@ -91,7 +92,6 @@ public:
 	
 	HANDLE m_pRCamera;		//右相机
 	BITMAPINFO  *m_pRBmpInfo;		    //右图像信息头指针
-	MV_PixelFormatEnums m_RPixelFormat;	//右相机图像格式
 	LPSTR  m_RightOriDIBBits;    //原始右图像，从图像文件读入或相机中直接获取。灰度图像，如果是RGB直接转化为8位灰度图
 	LPSTR  m_RightDIBBits;		//要进行处理的右图像，有可能是整幅图像也有可能是原始图像的一个区域
 	LPSTR  m_RightShowDIBBits;   //要进行显示的右图像
@@ -102,14 +102,7 @@ public:
 	int    m_nRBit;				//右图像位数
 	int    m_RightOriWidth;      //右图像原始宽度
 	int    m_RightOriHeight;     //右图像原始高度
-	BOOL   m_bRBufHandle;	    //右图像可以进行处理标识,当每次调用右相机回调函数是,该标记置true,
-							    //当对右图像进行处理时,该标记置false
-	CCriticalSection  m_CSectionR;	    //右相机采图临界区
-	CCriticalSection  m_CSectionCopyR;	//右相机采图临界区
-
-	int m_nRImageIndex;	//右相机采集图片序号标志
-
-	CArray<Blob> m_RightBlobSeq;	//记录右相机圆形特征中心坐标
+	BOOL   m_bRBufHandle;	    //右图像可以进行处理标识,当每次调用右相机回调函数是,该标记置true,当对右图像进行处理时,该标记置false
 	//标定相关变量
 	BOOL   m_bRCalibDraw;//右相机显示标定位置标记,true表示显示,false表示不显示
 	CPtrArray m_RightImgCoordSeq;//记录各个图像的标靶坐标
