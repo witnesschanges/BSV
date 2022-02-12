@@ -90,7 +90,6 @@ public:
 	BOOL   m_bLCalibDraw;//左相机显示标定位置标记,true表示显示,false表示不显示
 	CPtrArray m_LeftImgCoordSeq;//记录各个图像的标靶坐标
 	
-	HANDLE m_pRCamera;		//右相机
 	BITMAPINFO  *m_pRBmpInfo;		    //右图像信息头指针
 	LPSTR  m_RightOriDIBBits;    //原始右图像，从图像文件读入或相机中直接获取。灰度图像，如果是RGB直接转化为8位灰度图
 	LPSTR  m_RightDIBBits;		//要进行处理的右图像，有可能是整幅图像也有可能是原始图像的一个区域
