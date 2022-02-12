@@ -62,13 +62,9 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 	//左相机变量初始化
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	g_pBSVDlg = this;
-	 
-	m_LeftCamera.CameraHandle = NULL;
-	m_LeftCamera.ImageIndex = 0;
 
-	m_RightCamera.CameraHandle = NULL;
-	m_RightCamera.ImageIndex = 0;
-
+	m_LeftCamera.Initial();
+	m_RightCamera.Initial();
 	m_LeftImage.Initial();
 	m_RightImage.Initial();
 }
@@ -1583,4 +1579,10 @@ void Image::InitialBmpInfo()
 		BmpInfo->bmiColors[i].rgbRed = i;
 		BmpInfo->bmiColors[i].rgbReserved = 0;
 	}
+}
+
+void Camera::Initial()
+{
+	CameraHandle = NULL;
+	ImageIndex = 0;
 }

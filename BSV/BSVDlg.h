@@ -21,6 +21,8 @@ using namespace cv;
 class Camera
 {
 public:
+	void Initial();
+public:
 	HANDLE CameraHandle;//相机句柄
 	CCriticalSection Section;//相机采图临界区
 	CCriticalSection SectionCopy;//相机采图临界区
