@@ -49,9 +49,9 @@ void CCali_ParaDlg::OnBnClickedCalistart()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	UpdateData(TRUE);  
-    ((CBSVDlg*)GetParent())->row_corner_num = m_row_corner_num;
-	((CBSVDlg*)GetParent())->column_corner_num = m_column_corner_num;  
-	((CBSVDlg*)GetParent())->grid_width = m_grid_width;  
-	((CBSVDlg*)GetParent())->grid_height = m_grid_height;  
+    ((CBSVDlg*)GetParent())->m_Calibration.RowCornerNum = m_row_corner_num;
+	((CBSVDlg*)GetParent())->m_Calibration.ColumCornerNum = m_column_corner_num;  
+	((CBSVDlg*)GetParent())->m_Calibration.GridWidth = m_grid_width;  
+	((CBSVDlg*)GetParent())->m_Calibration.GridHeight = m_grid_height;  
 	OnOK();
 }

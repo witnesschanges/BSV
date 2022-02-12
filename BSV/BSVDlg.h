@@ -52,16 +52,18 @@ public:
 	BOOL BufHandle;//图像可以进行处理标识,当每次调用左相机回调函数是,该标记置true,当对图像进行处理时,该标记置false
 };
 
+//双目相机参数
 class Calibration
 {
 public:
-	//双目相机参数
-	BOOL m_bDMeasureDraw;//双相机显示测量结果标记,true表示显示,false表示不显示
-	int m_n2ImageIndex;//采集图像编号
-	int row_corner_num;//标定图像内角点（不和边缘接触的角点）行数
-	int column_corner_num;//标定图像内角点（不和边缘接触的角点）列数
-	int grid_width;//实际测量得到的标定板上每个棋盘格的长
-	int grid_height;//实际测量得到的标定板上每个棋盘格的宽
+	void Initial();
+public:
+	BOOL MeasureDraw;//双相机显示测量结果标记,true表示显示,false表示不显示(Not used yet)
+	int ImageIndex;//采集图像编号(Not used yet)
+	int RowCornerNum;//标定图像内角点（不和边缘接触的角点）行数
+	int ColumCornerNum;//标定图像内角点（不和边缘接触的角点）列数
+	int GridWidth;//实际测量得到的标定板上每个棋盘格的长
+	int GridHeight;//实际测量得到的标定板上每个棋盘格的宽
 };
 
 // CBSVDlg 对话框
@@ -79,6 +81,7 @@ public:
 	Camera m_RightCamera;
 	Image m_LeftImage;
 	Image m_RightImage;
+	Calibration m_Calibration;
 
 	/*CPtrArray m_LeftBlobSeq;*/	
 	//标定相关变量
@@ -97,14 +100,6 @@ public:
 	CEvent m_EVKillIAA;		//停止连续调整线程
 	CEvent m_EVDeadIAA;		//连续调整线程结束
 	bool   m_ThreadFlag;	//标定线程运行标记,TRUE表示运行,FALSE表示停止
-
-	//双目相机参数
-	BOOL   m_bDMeasureDraw;//双相机显示测量结果标记,true表示显示,false表示不显示
-	int m_n2ImageIndex;//采集图像编号
-	int row_corner_num;//标定图像内角点（不和边缘接触的角点）行数
-	int column_corner_num;//标定图像内角点（不和边缘接触的角点）列数
-	int grid_width;//实际测量得到的标定板上每个棋盘格的长
-	int grid_height;//实际测量得到的标定板上每个棋盘格的宽
 
 	protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持

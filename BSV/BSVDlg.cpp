@@ -1441,20 +1441,17 @@ void CBSVDlg::OnBnClickedCalibration()
 	string A((LPCTSTR)a);
 	string B((LPCTSTR)b);
 
-	row_corner_num = 0;
-	column_corner_num = 0;
-	grid_width = 0;
-	grid_height = 0;
+	m_Calibration.Initial();
 	CCali_ParaDlg dlg;
 	dlg.DoModal();
 	/*在这一段应该加一段判断语句，如果数据没有输入完全就不执行下面的标定语句*/
-	if(row_corner_num==0|column_corner_num==0|grid_width==0|grid_height==0)
+	if(m_Calibration.RowCornerNum==0|m_Calibration.ColumCornerNum==0|m_Calibration.GridWidth==0|m_Calibration.GridHeight==0)
 	{
 		AfxMessageBox(_T("未完整输入参数"));
 	}
 	else
 	{
-		CalibrationLeft(A,B,row_corner_num,column_corner_num,grid_width,grid_height);
+		CalibrationLeft(A,B,m_Calibration.RowCornerNum,m_Calibration.ColumCornerNum,m_Calibration.GridWidth,m_Calibration.GridHeight);
 	}
 }
 
@@ -1469,7 +1466,7 @@ void CBSVDlg::OnBnClickedCalibration2()
 
 	CCali_ParaDlg dlg;
 	dlg.DoModal();
-	CalibrationLeft(A,B,row_corner_num,column_corner_num,grid_width,grid_height);
+	CalibrationLeft(A,B,m_Calibration.RowCornerNum,m_Calibration.ColumCornerNum,m_Calibration.GridWidth,m_Calibration.GridHeight);
 }
 
 void CBSVDlg::OnBnClickedSavepic()
@@ -1585,4 +1582,12 @@ void Camera::Initial()
 {
 	CameraHandle = NULL;
 	ImageIndex = 0;
+}
+
+void Calibration::Initial()
+{
+	RowCornerNum = 0;
+	ColumCornerNum = 0;
+	GridWidth = 0;
+	GridHeight = 0;
 }
