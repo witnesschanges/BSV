@@ -32,6 +32,10 @@ public:
 
 class Image
 {
+public:
+	void Initial();
+	void InitialBmpInfo();
+public:
 	BITMAPINFO* BmpInfo;//图像信息头指针
 	LPSTR OriDIBBits;//原始图像，从图像文件读入或相机中直接获取。灰度图像，如果是RGB直接转化为8位灰度图
 	LPSTR DIBBits;//要进行处理的图像，有可能是整幅图像也有可能是原始图像的一个区域
@@ -48,6 +52,7 @@ class Image
 
 class Calibration
 {
+public:
 	//双目相机参数
 	BOOL m_bDMeasureDraw;//双相机显示测量结果标记,true表示显示,false表示不显示
 	int m_n2ImageIndex;//采集图像编号
@@ -70,20 +75,8 @@ public:
 public:
 	Camera m_LeftCamera;
 	Camera m_RightCamera;
-
-	BITMAPINFO  *m_pLBmpInfo;		    //左图像信息头指针
-	LPSTR  m_LeftOriDIBBits;    //原始左图像，从图像文件读入或相机中直接获取。灰度图像，如果是RGB直接转化为8位灰度图
-	LPSTR  m_LeftDIBBits;		//要进行处理的左图像，有可能是整幅图像也有可能是原始图像的一个区域
-	LPSTR  m_LeftShowDIBBits;   //要进行显示的左图像
-	LONG   m_LeftWidth;         //要进行处理的左图像的宽度，如果对图像区域进行处理，该宽度与原始图像的宽度是不同的
-	LONG   m_LeftHeight;        //要进行处理的左图像的高度，如果对图像区域进行处理，该宽度与原始图像的宽度是不同的
-	LONG   m_LeftRectLeft;      //左图像选择区域的左边界
-	LONG   m_LeftRectBottom;    //左图像选择区域的下边界
-	int    m_nLBit;				//左图像位数
-	int    m_LeftOriWidth;      //左图像原始宽度
-	int    m_LeftOriHeight;     //左图像原始高度
-	BOOL   m_bLBufHandle;	    //左图像可以进行处理标识,当每次调用左相机回调函数是,该标记置true,
-							    //当对左图像进行处理时,该标记置false
+	Image m_LeftImage;
+	Image m_RightImage;
 
 	/*CPtrArray m_LeftBlobSeq;*/	
 	//标定相关变量

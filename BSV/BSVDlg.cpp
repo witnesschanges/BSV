@@ -61,45 +61,13 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 
 	//左相机变量初始化
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-
 	g_pBSVDlg = this;
 	 
 	m_LeftCamera.CameraHandle = NULL;
 	m_LeftCamera.ImageIndex = 0;
 
-	m_bLBufHandle = false;
+	m_LeftImage.Initial();
 
-	m_LeftOriDIBBits = NULL;
-	m_LeftDIBBits = NULL;
-	m_LeftShowDIBBits = NULL;
-
-	m_LeftWidth = 0;
-	m_LeftHeight = 0;
-	m_LeftOriWidth = 1600;
-	m_LeftOriHeight = 1200;
-
-	m_nLBit = 8;
-
-	m_pLBmpInfo = (LPBITMAPINFO) new 
-		char[sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256];		//设置图像信息头
-	m_pLBmpInfo->bmiHeader.biBitCount = 8;
-	m_pLBmpInfo->bmiHeader.biClrImportant = 0;
-	m_pLBmpInfo->bmiHeader.biClrUsed = 0;
-	m_pLBmpInfo->bmiHeader.biCompression = BI_RGB;
-	m_pLBmpInfo->bmiHeader.biPlanes = 1;
-	m_pLBmpInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	m_pLBmpInfo->bmiHeader.biXPelsPerMeter = 0;
-	m_pLBmpInfo->bmiHeader.biYPelsPerMeter = 0;
-	m_pLBmpInfo->bmiHeader.biSizeImage = 0;
-	m_pLBmpInfo->bmiHeader.biHeight = m_LeftOriHeight;
-	m_pLBmpInfo->bmiHeader.biWidth = m_LeftOriWidth;
-	for(int i= 0;i<256;i++)
-	{
-		m_pLBmpInfo->bmiColors[i].rgbBlue = i;
-		m_pLBmpInfo->bmiColors[i].rgbGreen = i;
-		m_pLBmpInfo->bmiColors[i].rgbRed = i;
-		m_pLBmpInfo->bmiColors[i].rgbReserved = 0;
-	}
 	//右相机变量初始化
 	m_RightCamera.CameraHandle = NULL;
 	m_RightCamera.ImageIndex = 0;
@@ -244,11 +212,11 @@ void CBSVDlg::OnClose()
 	}
 
 	delete[] m_RightShowDIBBits;
-	m_LeftShowDIBBits = NULL;
-	delete[] m_LeftDIBBits;
-	m_LeftDIBBits = NULL;
-	delete[] m_LeftOriDIBBits;
-	m_LeftOriDIBBits = NULL;
+	m_LeftImage.ShowDIBBits = NULL;
+	delete[] m_LeftImage.DIBBits;
+	m_LeftImage.DIBBits = NULL;
+	delete[] m_LeftImage.OriDIBBits;
+	m_LeftImage.OriDIBBits = NULL;
 
 	//清除定时器
 	if (m_TimerFlag)
@@ -333,7 +301,7 @@ HCURSOR CBSVDlg::OnQueryDragIcon()
 int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 	// int index, LPSTR pData, int Length, void* pUserData )
 {
-	if(g_pBSVDlg->m_LeftOriDIBBits != NULL)
+	if(g_pBSVDlg->m_LeftImage.OriDIBBits != NULL)
 	{
 		//拷贝图像内存
 		g_pBSVDlg->m_LeftCamera.SectionCopy.Lock();
@@ -341,43 +309,43 @@ int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 		//为原始图像赋值，如果是24位RGB格式，则直接转换
 		if( g_pBSVDlg->m_LeftCamera.PixelFormat == PixelFormat_Mono8 )
 		{
-			memcpy(g_pBSVDlg->m_LeftOriDIBBits,pInfo->pImageBuffer,
-				g_pBSVDlg->m_LeftOriWidth*g_pBSVDlg->m_LeftOriHeight);
+			memcpy(g_pBSVDlg->m_LeftImage.OriDIBBits,pInfo->pImageBuffer,
+				g_pBSVDlg->m_LeftImage.OriWidth*g_pBSVDlg->m_LeftImage.OriHeight);
 		}
 		else
 		{
-			int count = (((g_pBSVDlg->m_LeftOriWidth*g_pBSVDlg->m_nLBit)+31)/32)*4;
-			MVBayerToBGR(g_pBSVDlg->m_LeftCamera.CameraHandle,pInfo->pImageBuffer,g_pBSVDlg->m_LeftOriDIBBits,count,
-				g_pBSVDlg->m_LeftOriWidth,g_pBSVDlg->m_LeftOriHeight,g_pBSVDlg->m_LeftCamera.PixelFormat);
+			int count = (((g_pBSVDlg->m_LeftImage.OriWidth*g_pBSVDlg->m_LeftImage.Bit)+31)/32)*4;
+			MVBayerToBGR(g_pBSVDlg->m_LeftCamera.CameraHandle,pInfo->pImageBuffer,g_pBSVDlg->m_LeftImage.OriDIBBits,count,
+				g_pBSVDlg->m_LeftImage.OriWidth,g_pBSVDlg->m_LeftImage.OriHeight,g_pBSVDlg->m_LeftCamera.PixelFormat);
 		}
 
 		LPSTR itemBits;
-		itemBits = new char[g_pBSVDlg->m_LeftOriWidth*g_pBSVDlg->m_LeftOriHeight*(g_pBSVDlg->m_nLBit/8)];
-		memcpy(itemBits,g_pBSVDlg->m_LeftOriDIBBits,g_pBSVDlg->m_LeftOriWidth*g_pBSVDlg->m_LeftOriHeight*(g_pBSVDlg->m_nLBit/8)); 
-		for (int i=0;i<g_pBSVDlg->m_LeftOriHeight;i++)
+		itemBits = new char[g_pBSVDlg->m_LeftImage.OriWidth*g_pBSVDlg->m_LeftImage.OriHeight*(g_pBSVDlg->m_LeftImage.Bit/8)];
+		memcpy(itemBits,g_pBSVDlg->m_LeftImage.OriDIBBits,g_pBSVDlg->m_LeftImage.OriWidth*g_pBSVDlg->m_LeftImage.OriHeight*(g_pBSVDlg->m_LeftImage.Bit/8)); 
+		for (int i=0;i<g_pBSVDlg->m_LeftImage.OriHeight;i++)
 		{
-			for (int j=0;j<g_pBSVDlg->m_LeftOriWidth;j++)
+			for (int j=0;j<g_pBSVDlg->m_LeftImage.OriWidth;j++)
 			{
-				if (g_pBSVDlg->m_nLBit == 8)
+				if (g_pBSVDlg->m_LeftImage.Bit == 8)
 				{
-					g_pBSVDlg->m_LeftShowDIBBits[i*g_pBSVDlg->m_LeftOriWidth+j] = 
-						itemBits[(g_pBSVDlg->m_LeftOriHeight-i-1)*g_pBSVDlg->m_LeftOriWidth+j];
+					g_pBSVDlg->m_LeftImage.ShowDIBBits[i*g_pBSVDlg->m_LeftImage.OriWidth+j] = 
+						itemBits[(g_pBSVDlg->m_LeftImage.OriHeight-i-1)*g_pBSVDlg->m_LeftImage.OriWidth+j];
 				}
-				else if (g_pBSVDlg->m_nLBit == 24)
+				else if (g_pBSVDlg->m_LeftImage.Bit == 24)
 				{
-					g_pBSVDlg->m_LeftShowDIBBits[(i*g_pBSVDlg->m_LeftOriWidth+j)*3] = 
-						itemBits[((g_pBSVDlg->m_LeftOriHeight-i-1)*g_pBSVDlg->m_LeftOriWidth+j)*3];
-					g_pBSVDlg->m_LeftShowDIBBits[(i*g_pBSVDlg->m_LeftOriWidth+j)*3+1] = 
-						itemBits[((g_pBSVDlg->m_LeftOriHeight-i-1)*g_pBSVDlg->m_LeftOriWidth+j)*3+1];
-					g_pBSVDlg->m_LeftShowDIBBits[(i*g_pBSVDlg->m_LeftOriWidth+j)*3+2] = 
-						itemBits[((g_pBSVDlg->m_LeftOriHeight-i-1)*g_pBSVDlg->m_LeftOriWidth+j)*3+2];
+					g_pBSVDlg->m_LeftImage.ShowDIBBits[(i*g_pBSVDlg->m_LeftImage.OriWidth+j)*3] = 
+						itemBits[((g_pBSVDlg->m_LeftImage.OriHeight-i-1)*g_pBSVDlg->m_LeftImage.OriWidth+j)*3];
+					g_pBSVDlg->m_LeftImage.ShowDIBBits[(i*g_pBSVDlg->m_LeftImage.OriWidth+j)*3+1] = 
+						itemBits[((g_pBSVDlg->m_LeftImage.OriHeight-i-1)*g_pBSVDlg->m_LeftImage.OriWidth+j)*3+1];
+					g_pBSVDlg->m_LeftImage.ShowDIBBits[(i*g_pBSVDlg->m_LeftImage.OriWidth+j)*3+2] = 
+						itemBits[((g_pBSVDlg->m_LeftImage.OriHeight-i-1)*g_pBSVDlg->m_LeftImage.OriWidth+j)*3+2];
 				}
 			}
 		}
 		delete []itemBits;
 		g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
 
-		g_pBSVDlg->m_bLBufHandle = true;//左图像可以进行处理标识
+		g_pBSVDlg->m_LeftImage.BufHandle = true;//左图像可以进行处理标识
 		g_pBSVDlg->DrawLeftCamera();
 	}
 	return 1;
@@ -454,18 +422,18 @@ void CBSVDlg::DrawLeftCamera()
 
 	//显示图像
 	::StretchDIBits(pdc->GetSafeHdc(), 0, 0, rc.Width(),rc.Height(),
-		0,0,m_LeftOriWidth,m_LeftOriHeight,
-		m_LeftShowDIBBits,(LPBITMAPINFO) m_pLBmpInfo, DIB_RGB_COLORS, SRCCOPY); 
+		0,0,m_LeftImage.OriWidth,m_LeftImage.OriHeight,
+		m_LeftImage.ShowDIBBits,(LPBITMAPINFO) m_LeftImage.BmpInfo, DIB_RGB_COLORS, SRCCOPY); 
 	
 	//显示十字参考线
 	//CPen pPenBlue;
 	//pPenBlue.CreatePen(PS_SOLID,1,RGB(0,0,128));
 	//CPen *pOldPen=pdc->SelectObject(&pPenBlue);
-	//double dbRateX = (double)rc.Width() /(double)m_LeftWidth;
-	//double dbRateY = (double)rc.Height() /(double)m_LeftHeight;
-	//double x1 = m_LeftWidth*dbRateX;
+	//double dbRateX = (double)rc.Width() /(double)m_LeftImage.Width;
+	//double dbRateY = (double)rc.Height() /(double)m_LeftImage.Height;
+	//double x1 = m_LeftImage.Width*dbRateX;
 	//double x2 = x1/2;
-	//double y1 = m_LeftHeight*dbRateY;
+	//double y1 = m_LeftImage.Height*dbRateY;
 	//double y2 = y1/2;
 	//pdc->MoveTo (0,y2);
 	//pdc->LineTo (x1,y2);
@@ -556,16 +524,16 @@ void CBSVDlg::OnBnClickedCapvideo()
 	// TODO: 在此添加控件通知处理程序代码
 	if (m_LeftCamera.CameraHandle != NULL)
 	{
-		MVGetWidth(m_LeftCamera.CameraHandle, &m_LeftOriWidth);  //获得图像长宽
-		MVGetHeight(m_LeftCamera.CameraHandle,&m_LeftOriHeight);
+		MVGetWidth(m_LeftCamera.CameraHandle, &m_LeftImage.OriWidth);  //获得图像长宽
+		MVGetHeight(m_LeftCamera.CameraHandle,&m_LeftImage.OriHeight);
 		MVGetPixelFormat(m_LeftCamera.CameraHandle,&m_LeftCamera.PixelFormat);  //获得数据格式
 		if( m_LeftCamera.PixelFormat == PixelFormat_Mono8 )
 		{
-			m_nLBit = 8;
+			m_LeftImage.Bit = 8;
 		}
 		else
 		{
-			m_nLBit = 24;
+			m_LeftImage.Bit = 24;
 		}
 		
 		MVSTATUS_CODES hr;
@@ -573,28 +541,26 @@ void CBSVDlg::OnBnClickedCapvideo()
 		if (hr == MVST_SUCCESS)
 		{	
 			//原始图像
-			m_pLBmpInfo->bmiHeader.biBitCount = m_nLBit;
-			m_pLBmpInfo->bmiHeader.biWidth = m_LeftOriWidth;
-			m_pLBmpInfo->bmiHeader.biHeight = m_LeftOriHeight;
+			m_LeftImage.BmpInfo->bmiHeader.biBitCount = m_LeftImage.Bit;
+			m_LeftImage.BmpInfo->bmiHeader.biWidth = m_LeftImage.OriWidth;
+			m_LeftImage.BmpInfo->bmiHeader.biHeight = m_LeftImage.OriHeight;
 
 			//为图像显示的图像数据分配内存空间
-			delete[] m_LeftShowDIBBits;
-			m_LeftShowDIBBits = NULL;
-			m_LeftShowDIBBits = new char[m_LeftOriWidth * m_LeftOriHeight * (m_nLBit/8)];
+			delete[] m_LeftImage.ShowDIBBits;
+			m_LeftImage.ShowDIBBits = NULL;
+			m_LeftImage.ShowDIBBits = new char[m_LeftImage.OriWidth * m_LeftImage.OriHeight * (m_LeftImage.Bit/8)];
 
-			delete[] m_LeftOriDIBBits;
-			m_LeftOriDIBBits = NULL;
-			m_LeftOriDIBBits = new char[m_LeftOriWidth * m_LeftOriHeight * (m_nLBit/8)];
+			delete[] m_LeftImage.OriDIBBits;
+			m_LeftImage.OriDIBBits = NULL;
+			m_LeftImage.OriDIBBits = new char[m_LeftImage.OriWidth * m_LeftImage.OriHeight * (m_LeftImage.Bit/8)];
 
 			//为进行处理的图像赋值
-			m_LeftRectLeft=0;
-			m_LeftRectBottom=0;
-			m_LeftWidth=m_LeftOriWidth;
-			m_LeftHeight=m_LeftOriHeight;
+			m_LeftImage.Width=m_LeftImage.OriWidth;
+			m_LeftImage.Height=m_LeftImage.OriHeight;
 
-			delete[] m_LeftDIBBits;
-			m_LeftDIBBits = NULL;
-			m_LeftDIBBits = new char[m_LeftWidth * m_LeftHeight * (m_nLBit/8)];
+			delete[] m_LeftImage.DIBBits;
+			m_LeftImage.DIBBits = NULL;
+			m_LeftImage.DIBBits = new char[m_LeftImage.Width * m_LeftImage.Height * (m_LeftImage.Bit/8)];
 
 			//开始采集图像后，不再接受更新的“连续采集”指令
 			GetDlgItem(IDC_CapVideo)->EnableWindow(false);
@@ -623,7 +589,7 @@ void CBSVDlg::OnBnClickedSetcamera()
 void CBSVDlg::OnBnClickedCircledetect()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_LeftShowDIBBits == NULL)
+	if (m_LeftImage.ShowDIBBits == NULL)
 	{
 		MessageBox("无图像数据！","BSV",MB_ICONWARNING);
 		return;
@@ -668,10 +634,10 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 				return;
 
 			Mat LSrcImg;
-			LSrcImg.create(m_LeftOriHeight, m_LeftOriWidth, CV_8UC1);
+			LSrcImg.create(m_LeftImage.OriHeight, m_LeftImage.OriWidth, CV_8UC1);
 
 			g_pBSVDlg->m_LeftCamera.SectionCopy.Lock();
-			memcpy(LSrcImg.data,m_LeftShowDIBBits,m_LeftOriWidth*m_LeftOriHeight*(m_nLBit/8));
+			memcpy(LSrcImg.data,m_LeftImage.ShowDIBBits,m_LeftImage.OriWidth*m_LeftImage.OriHeight*(m_LeftImage.Bit/8));
 			g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
 	
 			Mat LFilImg;
@@ -1056,15 +1022,15 @@ void CBSVDlg::ShowLeftCircles()
 	CBrush *pOldBrush;
 	pOldBrush = pdc->SelectObject(&BrushRed);
 
-	double dbRateX = (double)rc.Width()/(double)m_LeftOriWidth;
-	double dbRateY = (double)rc.Height()/(double)m_LeftOriHeight;
+	double dbRateX = (double)rc.Width()/(double)m_LeftImage.OriWidth;
+	double dbRateY = (double)rc.Height()/(double)m_LeftImage.OriHeight;
 	int ln = m_LeftCamera.BlobSeq.GetSize();
 	for (int i=0;i<ln;i++)
 	{
 		Blob pB = m_LeftCamera.BlobSeq.GetAt(i);
 		int x, y;
 		x = (int)(pB.BlobX*dbRateX);
-		y = (int)((m_LeftOriHeight - pB.BlobY)*dbRateY);
+		y = (int)((m_LeftImage.OriHeight - pB.BlobY)*dbRateY);
 		if(x<6)
 		{
 			x = 6;
@@ -1562,10 +1528,10 @@ void CBSVDlg::OnBnClickedSavepic()
 	if( m_LeftCamera.PixelFormat != PixelFormat_Mono8 )
 		return;
 	Mat LImg;
-	LImg.create(m_LeftOriHeight, m_LeftOriWidth, CV_8UC1);
+	LImg.create(m_LeftImage.OriHeight, m_LeftImage.OriWidth, CV_8UC1);
 
 	g_pBSVDlg->m_LeftCamera.SectionCopy.Lock();
-	memcpy(LImg.data,m_LeftShowDIBBits,m_LeftOriWidth*m_LeftOriHeight*(m_nLBit/8));
+	memcpy(LImg.data,m_LeftImage.ShowDIBBits,m_LeftImage.OriWidth*m_LeftImage.OriHeight*(m_LeftImage.Bit/8));
 	g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
 
 	std::stringstream StrStm;
@@ -1616,3 +1582,43 @@ void CBSVDlg::OnBnClickedSavepic2()
 //	// TODO: 在此添加控件通知处理程序代码
 //	
 //}
+
+void Image::Initial()
+{
+	InitialBmpInfo();
+	OriDIBBits = NULL;
+	DIBBits = NULL;
+	ShowDIBBits = NULL;
+	Width = 0;
+	Height = 0;
+	RectLeft = 0;
+	RectBottom = 0;
+	Bit = 8;
+	OriWidth = 1600;
+	OriHeight = 1200;
+	BufHandle = false;
+}
+
+void Image::InitialBmpInfo()
+{
+	BmpInfo = (LPBITMAPINFO) new
+		char[sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256];		//设置图像信息头
+	BmpInfo->bmiHeader.biBitCount = 8;
+	BmpInfo->bmiHeader.biClrImportant = 0;
+	BmpInfo->bmiHeader.biClrUsed = 0;
+	BmpInfo->bmiHeader.biCompression = BI_RGB;
+	BmpInfo->bmiHeader.biPlanes = 1;
+	BmpInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
+	BmpInfo->bmiHeader.biXPelsPerMeter = 0;
+	BmpInfo->bmiHeader.biYPelsPerMeter = 0;
+	BmpInfo->bmiHeader.biSizeImage = 0;
+	BmpInfo->bmiHeader.biHeight = OriHeight;
+	BmpInfo->bmiHeader.biWidth = OriWidth;
+	for (int i = 0; i < 256; i++)
+	{
+		BmpInfo->bmiColors[i].rgbBlue = i;
+		BmpInfo->bmiColors[i].rgbGreen = i;
+		BmpInfo->bmiColors[i].rgbRed = i;
+		BmpInfo->bmiColors[i].rgbReserved = 0;
+	}
+}
