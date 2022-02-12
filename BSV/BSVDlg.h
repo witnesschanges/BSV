@@ -27,7 +27,7 @@ public:
 	CCriticalSection Section;//相机采图临界区
 	CCriticalSection SectionCopy;//相机采图临界区
 	int ImageIndex;//相机采集图片序号标志
-	/*CPtrArray BlobSeq;*/
+	//CPtrArray BlobSeq;
 	CArray<Blob> BlobSeq;//记录相机圆形特征中心坐标
 	MV_PixelFormatEnums PixelFormat;//相机图像格式
 };
@@ -66,6 +66,14 @@ public:
 	int GridHeight;//实际测量得到的标定板上每个棋盘格的宽
 };
 
+//单相机标定参数
+class SingleCalibration
+{
+public:
+	BOOL CalibDraw;//相机显示标定位置标记,true表示显示,false表示不显示
+	CPtrArray ImgCoordSeq;//记录各个图像的标靶坐标
+};
+
 // CBSVDlg 对话框
 class CBSVDlg : public CDialogEx
 {
@@ -81,17 +89,9 @@ public:
 	Camera m_RightCamera;
 	Image m_LeftImage;
 	Image m_RightImage;
+	SingleCalibration m_LeftCalibration;
+	SingleCalibration m_RightCalibration;
 	Calibration m_Calibration;
-
-	/*CPtrArray m_LeftBlobSeq;*/	
-	//标定相关变量
-	BOOL   m_bLCalibDraw;//左相机显示标定位置标记,true表示显示,false表示不显示
-	CPtrArray m_LeftImgCoordSeq;//记录各个图像的标靶坐标
-	
-	//标定相关变量
-	BOOL   m_bRCalibDraw;//右相机显示标定位置标记,true表示显示,false表示不显示
-	CPtrArray m_RightImgCoordSeq;//记录各个图像的标靶坐标
-
 
 	bool    m_TimerFlag;	    //定时器标志
 	bool    m_TimerFlag2;       //定时器2标志

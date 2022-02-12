@@ -1141,11 +1141,11 @@ CString format_fraction(double data)
 //	//清除记录左图像特征圆坐标点
 //	Blob_ReleaseLeftBlobSeq();	//lq:有改动
 //	//清除记录各个图像的标靶坐标
-//	m_bLCalibDraw = false;//置绘制左相机标定标志
+//	m_LeftCalibration.CalibDraw = false;//置绘制左相机标定标志
 //	OnPaint();
 //
 //    int left_num=0;
-//	left_num=m_LeftImgCoordSeq.GetSize();
+//	left_num=m_LeftCalibration.CoordSeq.GetSize();
 //	
 //	//相机标定参数
 //	CString strCalibrate = "";
@@ -1160,17 +1160,17 @@ CString format_fraction(double data)
 //	}
 //	intrinsic_calibration_result leftICR;
 //	
-//    CPtrArray * leftx = & m_LeftImgCoordSeq;
+//    CPtrArray * leftx = & m_LeftCalibration.CoordSeq;
 //	if (!Calibration_LeftCamera(leftx,leftICR,left_re))
 //	{
-//		for (int i=0;i<m_LeftImgCoordSeq.GetSize();i++)
+//		for (int i=0;i<m_LeftCalibration.CoordSeq.GetSize();i++)
 //		{
 //			Image_Coordation*	pIC;
-//			pIC=(Image_Coordation*)m_LeftImgCoordSeq.GetAt(i);
+//			pIC=(Image_Coordation*)m_LeftCalibration.CoordSeq.GetAt(i);
 //			delete pIC;
 //			pIC=NULL;
 //		}
-//		m_LeftImgCoordSeq.RemoveAll();	
+//		m_LeftCalibration.CoordSeq.RemoveAll();	
 //		if(left_re != NULL)
 //		{
 //			for (k=0;k<left_num;k++)
@@ -1269,14 +1269,14 @@ CString format_fraction(double data)
 //			delete []left_re;
 //			left_re = NULL;
 //		}
-//		for ( i=0;i<m_LeftImgCoordSeq.GetSize();i++)
+//		for ( i=0;i<m_LeftCalibration.CoordSeq.GetSize();i++)
 //		{
 //			Image_Coordation*	pIC;
-//			pIC=(Image_Coordation*)m_LeftImgCoordSeq.GetAt(i);
+//			pIC=(Image_Coordation*)m_LeftCalibration.CoordSeq.GetAt(i);
 //			delete pIC;
 //			pIC=NULL;
 //		}
-//		m_LeftImgCoordSeq.RemoveAll();
+//		m_LeftCalibration.CoordSeq.RemoveAll();
 //		
 //		return true;
 //	}
@@ -1293,11 +1293,11 @@ CString format_fraction(double data)
 //	//清除记录右图像特征圆坐标点
 //	Blob_ReleaseLeftBlobSeq();
 //	//清除记录各个图像的标靶坐标
-//	m_bRCalibDraw = false;//置绘制右相机标定标志
+//	m_RightCalibration.CalibDraw = false;//置绘制右相机标定标志
 //	OnPaint();
 //
 //    int right_num=0;
-//	right_num=m_RightImgCoordSeq.GetSize();
+//	right_num=m_RightCalibration.CoordSeq.GetSize();
 //	//相机标定参数
 //	CString strCalibrate = "";
 //	double zero(0.0);
@@ -1311,16 +1311,16 @@ CString format_fraction(double data)
 //	}
 //	intrinsic_calibration_result rightICR;
 //	
-//	if (!Calibration_RightCamera(&m_RightImgCoordSeq,rightICR,right_re))
+//	if (!Calibration_RightCamera(&m_RightCalibration.CoordSeq,rightICR,right_re))
 //	{
-//		for (int i=0;i<m_RightImgCoordSeq.GetSize();i++)
+//		for (int i=0;i<m_RightCalibration.CoordSeq.GetSize();i++)
 //		{
 //			Image_Coordation*	pIC;
-//			pIC=(Image_Coordation*)m_RightImgCoordSeq.GetAt(i);
+//			pIC=(Image_Coordation*)m_RightCalibration.CoordSeq.GetAt(i);
 //			delete pIC;
 //			pIC=NULL;
 //		}
-//		m_RightImgCoordSeq.RemoveAll();	
+//		m_RightCalibration.CoordSeq.RemoveAll();	
 //		if(right_re != NULL)
 //		{
 //			for (k=0;k<right_num;k++)
@@ -1418,14 +1418,14 @@ CString format_fraction(double data)
 //			delete []right_re;
 //			right_re = NULL;
 //		}
-//		for ( i=0;i<m_RightImgCoordSeq.GetSize();i++)
+//		for ( i=0;i<m_RightCalibration.CoordSeq.GetSize();i++)
 //		{
 //			Image_Coordation*	pIC;
-//			pIC=(Image_Coordation*)m_RightImgCoordSeq.GetAt(i);
+//			pIC=(Image_Coordation*)m_RightCalibration.CoordSeq.GetAt(i);
 //			delete pIC;
 //			pIC=NULL;
 //		}
-//		m_RightImgCoordSeq.RemoveAll();
+//		m_RightCalibration.CoordSeq.RemoveAll();
 //		return true;
 //	}
 //
