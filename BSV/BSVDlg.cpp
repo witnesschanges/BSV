@@ -66,47 +66,11 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 	m_LeftCamera.CameraHandle = NULL;
 	m_LeftCamera.ImageIndex = 0;
 
-	m_LeftImage.Initial();
-
-	//右相机变量初始化
 	m_RightCamera.CameraHandle = NULL;
 	m_RightCamera.ImageIndex = 0;
 
-	m_bRBufHandle = false;
-
-	m_RightOriDIBBits = NULL;
-	m_RightDIBBits = NULL;
-	m_RightShowDIBBits = NULL;
-
-	m_RightWidth = 0;
-	m_RightHeight = 0;
-	m_RightOriWidth = 1600;
-	m_RightOriHeight = 1200;
-
-	m_nRBit = 8;
-
-	m_pRBmpInfo = (LPBITMAPINFO) new 
-		char[sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256];		//设置图像信息头
-	m_pRBmpInfo->bmiHeader.biBitCount = 8;
-	m_pRBmpInfo->bmiHeader.biClrImportant = 0;
-	m_pRBmpInfo->bmiHeader.biClrUsed = 0;
-	m_pRBmpInfo->bmiHeader.biCompression = BI_RGB;
-	m_pRBmpInfo->bmiHeader.biPlanes = 1;
-	m_pRBmpInfo->bmiHeader.biSize = sizeof(BITMAPINFOHEADER);
-	m_pRBmpInfo->bmiHeader.biXPelsPerMeter = 0;
-	m_pRBmpInfo->bmiHeader.biYPelsPerMeter = 0;
-	m_pRBmpInfo->bmiHeader.biSizeImage = 0;
-	m_pRBmpInfo->bmiHeader.biHeight = m_RightOriHeight;
-	m_pRBmpInfo->bmiHeader.biWidth = m_RightOriWidth;
-	for(int i= 0;i<256;i++)
-	{
-		m_pRBmpInfo->bmiColors[i].rgbBlue = i;
-		m_pRBmpInfo->bmiColors[i].rgbGreen = i;
-		m_pRBmpInfo->bmiColors[i].rgbRed = i;
-		m_pRBmpInfo->bmiColors[i].rgbReserved = 0;
-	}
-
-	m_RightCamera.ImageIndex = 0;
+	m_LeftImage.Initial();
+	m_RightImage.Initial();
 }
 
 void CBSVDlg::DoDataExchange(CDataExchange* pDX)
@@ -211,7 +175,7 @@ void CBSVDlg::OnClose()
 		m_LeftCamera.CameraHandle = NULL;
 	}
 
-	delete[] m_RightShowDIBBits;
+	delete[] m_RightImage.ShowDIBBits;
 	m_LeftImage.ShowDIBBits = NULL;
 	delete[] m_LeftImage.DIBBits;
 	m_LeftImage.DIBBits = NULL;
@@ -355,7 +319,7 @@ int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 int RightCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 	// int index, LPSTR pData, int Length, void* pUserData )
 {
-	if(g_pBSVDlg->m_RightOriDIBBits != NULL)//有问题
+	if(g_pBSVDlg->m_RightImage.OriDIBBits != NULL)//有问题
 	{
 		//拷贝图像内存
 		g_pBSVDlg->m_RightCamera.SectionCopy.Lock();
@@ -363,43 +327,43 @@ int RightCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 		//为原始图像赋值，如果是24位RGB格式，则直接转换
 		if( g_pBSVDlg->m_RightCamera.PixelFormat == PixelFormat_Mono8 )
 		{
-			memcpy(g_pBSVDlg->m_RightOriDIBBits,pInfo->pImageBuffer,
-				g_pBSVDlg->m_RightOriWidth*g_pBSVDlg->m_RightOriHeight);
+			memcpy(g_pBSVDlg->m_RightImage.OriDIBBits,pInfo->pImageBuffer,
+				g_pBSVDlg->m_RightImage.OriWidth*g_pBSVDlg->m_RightImage.OriHeight);
 		}
 		else
 		{
-			int count = (((g_pBSVDlg->m_RightOriWidth*g_pBSVDlg->m_nRBit)+31)/32)*4;
-			MVBayerToBGR(g_pBSVDlg->m_RightCamera.CameraHandle,pInfo->pImageBuffer,g_pBSVDlg->m_RightOriDIBBits,count,
-				g_pBSVDlg->m_RightOriWidth,g_pBSVDlg->m_RightOriHeight,g_pBSVDlg->m_RightCamera.PixelFormat);
+			int count = (((g_pBSVDlg->m_RightImage.OriWidth*g_pBSVDlg->m_RightImage.Bit)+31)/32)*4;
+			MVBayerToBGR(g_pBSVDlg->m_RightCamera.CameraHandle,pInfo->pImageBuffer,g_pBSVDlg->m_RightImage.OriDIBBits,count,
+				g_pBSVDlg->m_RightImage.OriWidth,g_pBSVDlg->m_RightImage.OriHeight,g_pBSVDlg->m_RightCamera.PixelFormat);
 		}
 
 		LPSTR itemBits;
-		itemBits = new char[g_pBSVDlg->m_RightOriWidth*g_pBSVDlg->m_RightOriHeight*(g_pBSVDlg->m_nRBit/8)];
-		memcpy(itemBits,g_pBSVDlg->m_RightOriDIBBits,g_pBSVDlg->m_RightOriWidth*g_pBSVDlg->m_RightOriHeight*(g_pBSVDlg->m_nRBit/8)); 
-		for (int i=0;i<g_pBSVDlg->m_RightOriHeight;i++)
+		itemBits = new char[g_pBSVDlg->m_RightImage.OriWidth*g_pBSVDlg->m_RightImage.OriHeight*(g_pBSVDlg->m_RightImage.Bit/8)];
+		memcpy(itemBits,g_pBSVDlg->m_RightImage.OriDIBBits,g_pBSVDlg->m_RightImage.OriWidth*g_pBSVDlg->m_RightImage.OriHeight*(g_pBSVDlg->m_RightImage.Bit/8)); 
+		for (int i=0;i<g_pBSVDlg->m_RightImage.OriHeight;i++)
 		{
-			for (int j=0;j<g_pBSVDlg->m_RightOriWidth;j++)
+			for (int j=0;j<g_pBSVDlg->m_RightImage.OriWidth;j++)
 			{
-				if (g_pBSVDlg->m_nRBit == 8)
+				if (g_pBSVDlg->m_RightImage.Bit == 8)
 				{
-					g_pBSVDlg->m_RightShowDIBBits[i*g_pBSVDlg->m_RightOriWidth+j] = 
-						itemBits[(g_pBSVDlg->m_RightOriHeight-i-1)*g_pBSVDlg->m_RightOriWidth+j];
+					g_pBSVDlg->m_RightImage.ShowDIBBits[i*g_pBSVDlg->m_RightImage.OriWidth+j] = 
+						itemBits[(g_pBSVDlg->m_RightImage.OriHeight-i-1)*g_pBSVDlg->m_RightImage.OriWidth+j];
 				}
-				else if (g_pBSVDlg->m_nRBit == 24)
+				else if (g_pBSVDlg->m_RightImage.Bit == 24)
 				{
-					g_pBSVDlg->m_RightShowDIBBits[(i*g_pBSVDlg->m_RightOriWidth+j)*3] = 
-						itemBits[((g_pBSVDlg->m_RightOriHeight-i-1)*g_pBSVDlg->m_RightOriWidth+j)*3];
-					g_pBSVDlg->m_RightShowDIBBits[(i*g_pBSVDlg->m_RightOriWidth+j)*3+1] = 
-						itemBits[((g_pBSVDlg->m_RightOriHeight-i-1)*g_pBSVDlg->m_RightOriWidth+j)*3+1];
-					g_pBSVDlg->m_RightShowDIBBits[(i*g_pBSVDlg->m_RightOriWidth+j)*3+2] = 
-						itemBits[((g_pBSVDlg->m_RightOriHeight-i-1)*g_pBSVDlg->m_RightOriWidth+j)*3+2];
+					g_pBSVDlg->m_RightImage.ShowDIBBits[(i*g_pBSVDlg->m_RightImage.OriWidth+j)*3] = 
+						itemBits[((g_pBSVDlg->m_RightImage.OriHeight-i-1)*g_pBSVDlg->m_RightImage.OriWidth+j)*3];
+					g_pBSVDlg->m_RightImage.ShowDIBBits[(i*g_pBSVDlg->m_RightImage.OriWidth+j)*3+1] = 
+						itemBits[((g_pBSVDlg->m_RightImage.OriHeight-i-1)*g_pBSVDlg->m_RightImage.OriWidth+j)*3+1];
+					g_pBSVDlg->m_RightImage.ShowDIBBits[(i*g_pBSVDlg->m_RightImage.OriWidth+j)*3+2] = 
+						itemBits[((g_pBSVDlg->m_RightImage.OriHeight-i-1)*g_pBSVDlg->m_RightImage.OriWidth+j)*3+2];
 				}
 			}
 		}
 		delete []itemBits;
 		g_pBSVDlg->m_RightCamera.SectionCopy.Unlock();
 
-		g_pBSVDlg->m_bRBufHandle = true;//左图像可以进行处理标识
+		g_pBSVDlg->m_RightImage.BufHandle = true;//左图像可以进行处理标识
 		g_pBSVDlg->DrawRightCamera();
 	}
 	return 1;
@@ -463,18 +427,18 @@ void CBSVDlg::DrawRightCamera()
 
 	//显示图像
 	::StretchDIBits(pdc->GetSafeHdc(), 0, 0, rc.Width(),rc.Height(),
-		0,0,m_RightOriWidth,m_RightOriHeight,
-		m_RightShowDIBBits,(LPBITMAPINFO) m_pRBmpInfo, DIB_RGB_COLORS, SRCCOPY); 
+		0,0,m_RightImage.OriWidth,m_RightImage.OriHeight,
+		m_RightImage.ShowDIBBits,(LPBITMAPINFO) m_RightImage.BmpInfo, DIB_RGB_COLORS, SRCCOPY); 
 	
 	//显示十字参考线
 	//CPen pPenBlue;
 	//pPenBlue.CreatePen(PS_SOLID,1,RGB(0,0,128));
 	//CPen *pOldPen=pdc->SelectObject(&pPenBlue);
-	//double dbRateX = (double)rc.Width() /(double)m_RightWidth;
-	//double dbRateY = (double)rc.Height() /(double)m_RightHeight;
-	//double x1 = m_RightWidth*dbRateX;
+	//double dbRateX = (double)rc.Width() /(double)m_RightImage.Width;
+	//double dbRateY = (double)rc.Height() /(double)m_RightImage.Height;
+	//double x1 = m_RightImage.Width*dbRateX;
 	//double x2 = x1/2;
-	//double y1 = m_RightHeight*dbRateY;
+	//double y1 = m_RightImage.Height*dbRateY;
 	//double y2 = y1/2;
 	//pdc->MoveTo (0,y2);
 	//pdc->LineTo (x1,y2);
@@ -671,9 +635,9 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 				return;
 
 			Mat RSrcImg;
-			RSrcImg.create(m_RightOriHeight, m_RightOriWidth, CV_8UC1);
+			RSrcImg.create(m_RightImage.OriHeight, m_RightImage.OriWidth, CV_8UC1);
 			g_pBSVDlg->m_RightCamera.SectionCopy.Lock();
-			memcpy(RSrcImg.data,m_RightShowDIBBits,m_RightOriWidth*m_RightOriHeight*(m_nRBit/8));
+			memcpy(RSrcImg.data,m_RightImage.ShowDIBBits,m_RightImage.OriWidth*m_RightImage.OriHeight*(m_RightImage.Bit/8));
 			g_pBSVDlg->m_RightCamera.SectionCopy.Unlock();
 	
 			Mat RFilImg;
@@ -744,16 +708,16 @@ void CBSVDlg::OnBnClickedCapvideo2()
 	// TODO: 在此添加控件通知处理程序代码
 	if (m_RightCamera.CameraHandle != NULL)
 	{
-		MVGetWidth(m_RightCamera.CameraHandle, &m_RightOriWidth);  //获得图像长宽
-		MVGetHeight(m_RightCamera.CameraHandle,&m_RightOriHeight);
+		MVGetWidth(m_RightCamera.CameraHandle, &m_RightImage.OriWidth);  //获得图像长宽
+		MVGetHeight(m_RightCamera.CameraHandle,&m_RightImage.OriHeight);
 		MVGetPixelFormat(m_RightCamera.CameraHandle,&m_RightCamera.PixelFormat);  //获得数据格式
 		if( m_RightCamera.PixelFormat == PixelFormat_Mono8 )
 		{
-			m_nRBit = 8;
+			m_RightImage.Bit = 8;
 		}
 		else
 		{
-			m_nRBit = 24;
+			m_RightImage.Bit = 24;
 		}
 		
 		MVSTATUS_CODES hr2;
@@ -761,28 +725,26 @@ void CBSVDlg::OnBnClickedCapvideo2()
 		if (hr2 == MVST_SUCCESS)
 		{	
 			//原始图像
-			m_pRBmpInfo->bmiHeader.biBitCount = m_nRBit;
-			m_pRBmpInfo->bmiHeader.biWidth = m_RightOriWidth;
-			m_pRBmpInfo->bmiHeader.biHeight = m_RightOriHeight;
+			m_RightImage.BmpInfo->bmiHeader.biBitCount = m_RightImage.Bit;
+			m_RightImage.BmpInfo->bmiHeader.biWidth = m_RightImage.OriWidth;
+			m_RightImage.BmpInfo->bmiHeader.biHeight = m_RightImage.OriHeight;
 
 			//为图像显示的图像数据分配内存空间
-			delete[] m_RightShowDIBBits;
-			m_RightShowDIBBits = NULL;
-			m_RightShowDIBBits = new char[m_RightOriWidth * m_RightOriHeight * (m_nRBit/8)];
+			delete[] m_RightImage.ShowDIBBits;
+			m_RightImage.ShowDIBBits = NULL;
+			m_RightImage.ShowDIBBits = new char[m_RightImage.OriWidth * m_RightImage.OriHeight * (m_RightImage.Bit/8)];
 
-			delete[] m_RightOriDIBBits;
-			m_RightOriDIBBits = NULL;
-			m_RightOriDIBBits = new char[m_RightOriWidth * m_RightOriHeight * (m_nRBit/8)];
+			delete[] m_RightImage.OriDIBBits;
+			m_RightImage.OriDIBBits = NULL;
+			m_RightImage.OriDIBBits = new char[m_RightImage.OriWidth * m_RightImage.OriHeight * (m_RightImage.Bit/8)];
 
 			//为进行处理的图像赋值
-			m_RightRectLeft=0;
-			m_RightRectBottom=0;
-			m_RightWidth=m_RightOriWidth;
-			m_RightHeight=m_RightOriHeight;
+			m_RightImage.Width=m_RightImage.OriWidth;
+			m_RightImage.Height=m_RightImage.OriHeight;
 
-			delete[] m_RightDIBBits;
-			m_RightDIBBits = NULL;
-			m_RightDIBBits = new char[m_RightWidth * m_RightHeight * (m_nRBit/8)];
+			delete[] m_RightImage.DIBBits;
+			m_RightImage.DIBBits = NULL;
+			m_RightImage.DIBBits = new char[m_RightImage.Width * m_RightImage.Height * (m_RightImage.Bit/8)];
 
 			//开始采集图像后，不再接受更新的“连续采集”指令
 			GetDlgItem(IDC_CapVideo2)->EnableWindow(false);
@@ -1067,15 +1029,15 @@ void CBSVDlg::ShowRightCircles()
 	CBrush *pOldBrush;
 	pOldBrush = pdc->SelectObject(&BrushRed);
 
-	double dbRateX = (double)rc.Width()/(double)m_RightOriWidth;
-	double dbRateY = (double)rc.Height()/(double)m_RightOriHeight;
+	double dbRateX = (double)rc.Width()/(double)m_RightImage.OriWidth;
+	double dbRateY = (double)rc.Height()/(double)m_RightImage.OriHeight;
 	int ln = m_RightCamera.BlobSeq.GetSize();
 	for (int i=0;i<ln;i++)
 	{
 		Blob pB = m_RightCamera.BlobSeq.GetAt(i);
 		int x, y;
 		x = (int)(pB.BlobX*dbRateX);
-		y = (int)((m_RightOriHeight - pB.BlobY)*dbRateY);
+		y = (int)((m_RightImage.OriHeight - pB.BlobY)*dbRateY);
 		if(x<6)
 		{
 			x = 6;
@@ -1103,7 +1065,7 @@ void CBSVDlg::ShowRightCircles()
 void CBSVDlg::OnBnClickedCircledetect2()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_RightShowDIBBits == NULL)
+	if (m_RightImage.ShowDIBBits == NULL)
 	{
 		MessageBox("无图像数据！","BSV",MB_ICONWARNING);
 		return;
@@ -1559,10 +1521,10 @@ void CBSVDlg::OnBnClickedSavepic2()
 	if( m_RightCamera.PixelFormat != PixelFormat_Mono8 )
 				return;
 	Mat RImg;
-	RImg.create(m_RightOriHeight, m_RightOriWidth, CV_8UC1);
+	RImg.create(m_RightImage.OriHeight, m_RightImage.OriWidth, CV_8UC1);
 
 	g_pBSVDlg->m_RightCamera.SectionCopy.Lock();
-	memcpy(RImg.data,m_RightShowDIBBits,m_RightOriWidth*m_RightOriHeight*(m_nRBit/8));
+	memcpy(RImg.data,m_RightImage.ShowDIBBits,m_RightImage.OriWidth*m_RightImage.OriHeight*(m_RightImage.Bit/8));
 	g_pBSVDlg->m_RightCamera.SectionCopy.Unlock();
 
 	std::stringstream StrStm;

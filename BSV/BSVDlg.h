@@ -83,18 +83,6 @@ public:
 	BOOL   m_bLCalibDraw;//左相机显示标定位置标记,true表示显示,false表示不显示
 	CPtrArray m_LeftImgCoordSeq;//记录各个图像的标靶坐标
 	
-	BITMAPINFO  *m_pRBmpInfo;		    //右图像信息头指针
-	LPSTR  m_RightOriDIBBits;    //原始右图像，从图像文件读入或相机中直接获取。灰度图像，如果是RGB直接转化为8位灰度图
-	LPSTR  m_RightDIBBits;		//要进行处理的右图像，有可能是整幅图像也有可能是原始图像的一个区域
-	LPSTR  m_RightShowDIBBits;   //要进行显示的右图像
-	LONG   m_RightWidth;         //要进行处理的右图像的宽度，如果对图像区域进行处理，该宽度与原始图像的宽度是不同的
-	LONG   m_RightHeight;        //要进行处理的右图像的高度，如果对图像区域进行处理，该宽度与原始图像的宽度是不同的
-	LONG   m_RightRectLeft;      //右图像选择区域的左边界
-	LONG   m_RightRectBottom;    //右图像选择区域的下边界
-	int    m_nRBit;				//右图像位数
-	int    m_RightOriWidth;      //右图像原始宽度
-	int    m_RightOriHeight;     //右图像原始高度
-	BOOL   m_bRBufHandle;	    //右图像可以进行处理标识,当每次调用右相机回调函数是,该标记置true,当对右图像进行处理时,该标记置false
 	//标定相关变量
 	BOOL   m_bRCalibDraw;//右相机显示标定位置标记,true表示显示,false表示不显示
 	CPtrArray m_RightImgCoordSeq;//记录各个图像的标靶坐标
