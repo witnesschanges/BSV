@@ -84,49 +84,40 @@ public:
 // 对话框数据
 	enum { IDD = IDD_BSV_DIALOG };
 
-public:
-	Camera m_LeftCamera;
-	Camera m_RightCamera;
-	Image m_LeftImage;
-	Image m_RightImage;
-	SingleCalibration m_LeftCalibration;
-	SingleCalibration m_RightCalibration;
-	Calibration m_Calibration;
-
-	bool    m_TimerFlag;	    //定时器标志
-	bool    m_TimerFlag2;       //定时器2标志
-	CWinThread *m_IAAThread;
-
-	CEvent m_EVKillIAA;		//停止连续调整线程
-	CEvent m_EVDeadIAA;		//连续调整线程结束
-	bool   m_ThreadFlag;	//标定线程运行标记,TRUE表示运行,FALSE表示停止
-
-	protected:
+protected:
 	virtual void DoDataExchange(CDataExchange* pDX);	// DDX/DDV 支持
 
 // 实现
 protected:
 	HICON m_hIcon;
+	virtual BOOL OnInitDialog();
 
 	// 生成的消息映射函数
-	virtual BOOL OnInitDialog();
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-	DECLARE_MESSAGE_MAP()
-public://lq:以afx_msg打头的是消息处理函数
 	afx_msg void OnBnClickedOpencamera();
 	afx_msg void OnBnClickedCapvideo();
 	afx_msg void OnBnClickedSetcamera();
 	afx_msg void OnBnClickedCircledetect();
-	void DrawLeftCamera();
-	void DrawRightCamera();
 	afx_msg void OnBnClickedOpencamera2();
 	afx_msg void OnBnClickedCapvideo2();
 	afx_msg void OnBnClickedSetcamera2();
 	afx_msg void OnBnClickedStopdetect();
 	afx_msg void OnBnClickedOpen2camera();
 	afx_msg void OnBnClickedCap2video();
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnClose();
+	afx_msg void OnBnClickedCircledetect2();
+	afx_msg void OnBnClickedStopdetect2();
+	afx_msg void OnBnClickedCircle2detect();
+	afx_msg void OnBnClickedCalibration();
+	afx_msg void OnBnClickedSavepic();
+	afx_msg void OnBnClickedSavepic2();
+	afx_msg void OnBnClickedCalibration2();
+	DECLARE_MESSAGE_MAP()
+
+public:
 	void Blob_ReleaseLeftBlobSeq();
 	void Blob_ReleaseRightBlobSeq();
 	void Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh, 
@@ -137,20 +128,27 @@ public://lq:以afx_msg打头的是消息处理函数
 	void Blob_DenoisingRightArea(int MinArea, int MaxArea);
 	void ShowLeftCircles();
 	void ShowRightCircles();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg void OnClose();
-	afx_msg void OnBnClickedCircledetect2();
-	afx_msg void OnBnClickedStopdetect2();
-	afx_msg void OnBnClickedCircle2detect();
+	void DrawLeftCamera();
+	void DrawRightCamera();
 	BOOL CalibFinishLeftCamera();
 	BOOL CalibFinishRightCamera();
-
-	public:
-	CRichEditCtrl	m_static_FinishText;
-	CListCtrl	m_list_Finish;
 	void StopLeftCamera();
-	afx_msg void OnBnClickedCalibration();
-	afx_msg void OnBnClickedSavepic();
-	afx_msg void OnBnClickedSavepic2();
-	afx_msg void OnBnClickedCalibration2();
+
+public:
+	Camera m_LeftCamera;
+	Camera m_RightCamera;
+	Image m_LeftImage;
+	Image m_RightImage;
+	SingleCalibration m_LeftCalibration;
+	SingleCalibration m_RightCalibration;
+	Calibration m_Calibration;
+
+	CRichEditCtrl m_static_FinishText;
+	CListCtrl m_list_Finish;
+	bool m_TimerFlag;//定时器标志
+	bool m_TimerFlag2;//定时器2标志
+	CWinThread* m_IAAThread;
+	CEvent m_EVKillIAA;//停止连续调整线程
+	CEvent m_EVDeadIAA;//连续调整线程结束
+	bool m_ThreadFlag;//标定线程运行标记,TRUE表示运行,FALSE表示停止
 };
