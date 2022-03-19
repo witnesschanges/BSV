@@ -140,6 +140,7 @@ public:
 
 public:
 	void OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId);
+	void CapVideo(Camera &camera, Image image, UINT32 capVideoId, int (*StreamCB)(MV_IMAGE_INFO*, long nUserVal));
 
 public:
 	Camera m_LeftCamera;

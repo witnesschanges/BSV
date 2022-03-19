@@ -485,54 +485,59 @@ void CBSVDlg::OnBnClickedOpencamera()
 
 }
 
-void CBSVDlg::OnBnClickedCapvideo()
+void CBSVDlg::CapVideo(Camera& camera, Image image, UINT32 capVideoId, int (*CallBackFunc)(MV_IMAGE_INFO*, long nUserVal))
 {
-	// TODO: 在此添加控件通知处理程序代码
-	if (m_LeftCamera.CameraHandle != NULL)
+	if (camera.CameraHandle != NULL)
 	{
-		MVGetWidth(m_LeftCamera.CameraHandle, &m_LeftImage.OriWidth);  //获得图像长宽
-		MVGetHeight(m_LeftCamera.CameraHandle,&m_LeftImage.OriHeight);
-		MVGetPixelFormat(m_LeftCamera.CameraHandle,&m_LeftCamera.PixelFormat);  //获得数据格式
-		if( m_LeftCamera.PixelFormat == PixelFormat_Mono8 )
+		MVGetWidth(camera.CameraHandle, &image.OriWidth);  //获得图像长宽
+		MVGetHeight(camera.CameraHandle, &image.OriHeight);
+		MVGetPixelFormat(camera.CameraHandle, &camera.PixelFormat);  //获得数据格式
+		if (camera.PixelFormat == PixelFormat_Mono8)
 		{
-			m_LeftImage.Bit = 8;
+			image.Bit = 8;
 		}
 		else
 		{
-			m_LeftImage.Bit = 24;
+			image.Bit = 24;
 		}
-		
+
 		MVSTATUS_CODES hr;
-		hr =  MVStartGrab(m_LeftCamera.CameraHandle, LeftCallbackFunction, (long)this); //设置回调函数
+		hr = MVStartGrab(camera.CameraHandle, CallBackFunc, (long)this); //设置回调函数
 		if (hr == MVST_SUCCESS)
-		{	
+		{
 			//原始图像
-			m_LeftImage.BmpInfo->bmiHeader.biBitCount = m_LeftImage.Bit;
-			m_LeftImage.BmpInfo->bmiHeader.biWidth = m_LeftImage.OriWidth;
-			m_LeftImage.BmpInfo->bmiHeader.biHeight = m_LeftImage.OriHeight;
+			image.BmpInfo->bmiHeader.biBitCount = image.Bit;
+			image.BmpInfo->bmiHeader.biWidth = image.OriWidth;
+			image.BmpInfo->bmiHeader.biHeight = image.OriHeight;
 
 			//为图像显示的图像数据分配内存空间
-			delete[] m_LeftImage.ShowDIBBits;
-			m_LeftImage.ShowDIBBits = NULL;
-			m_LeftImage.ShowDIBBits = new char[m_LeftImage.OriWidth * m_LeftImage.OriHeight * (m_LeftImage.Bit/8)];
+			delete[] image.ShowDIBBits;
+			image.ShowDIBBits = NULL;
+			image.ShowDIBBits = new char[image.OriWidth * image.OriHeight * (image.Bit / 8)];
 
-			delete[] m_LeftImage.OriDIBBits;
-			m_LeftImage.OriDIBBits = NULL;
-			m_LeftImage.OriDIBBits = new char[m_LeftImage.OriWidth * m_LeftImage.OriHeight * (m_LeftImage.Bit/8)];
+			delete[] image.OriDIBBits;
+			image.OriDIBBits = NULL;
+			image.OriDIBBits = new char[image.OriWidth * image.OriHeight * (image.Bit / 8)];
 
 			//为进行处理的图像赋值
-			m_LeftImage.Width=m_LeftImage.OriWidth;
-			m_LeftImage.Height=m_LeftImage.OriHeight;
+			image.Width = image.OriWidth;
+			image.Height = image.OriHeight;
 
-			delete[] m_LeftImage.DIBBits;
-			m_LeftImage.DIBBits = NULL;
-			m_LeftImage.DIBBits = new char[m_LeftImage.Width * m_LeftImage.Height * (m_LeftImage.Bit/8)];
+			delete[] image.DIBBits;
+			image.DIBBits = NULL;
+			image.DIBBits = new char[image.Width * image.Height * (image.Bit / 8)];
 
 			//开始采集图像后，不再接受更新的“连续采集”指令
-			GetDlgItem(IDC_CapVideo)->EnableWindow(false);
+			GetDlgItem(capVideoId)->EnableWindow(false);
 			//GetDlgItem(IDC_Btn_SetCamera)->EnableWindow(false);
 		}
 	}
+}
+
+void CBSVDlg::OnBnClickedCapvideo()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	CapVideo(m_LeftCamera, m_LeftImage, IDC_CapVideo, LeftCallbackFunction);
 }
 
 void CBSVDlg::OnBnClickedSetcamera()
@@ -683,51 +688,7 @@ void CBSVDlg::OnBnClickedOpencamera2()
 void CBSVDlg::OnBnClickedCapvideo2()
 {
 	// TODO: 在此添加控件通知处理程序代码
-	if (m_RightCamera.CameraHandle != NULL)
-	{
-		MVGetWidth(m_RightCamera.CameraHandle, &m_RightImage.OriWidth);  //获得图像长宽
-		MVGetHeight(m_RightCamera.CameraHandle,&m_RightImage.OriHeight);
-		MVGetPixelFormat(m_RightCamera.CameraHandle,&m_RightCamera.PixelFormat);  //获得数据格式
-		if( m_RightCamera.PixelFormat == PixelFormat_Mono8 )
-		{
-			m_RightImage.Bit = 8;
-		}
-		else
-		{
-			m_RightImage.Bit = 24;
-		}
-		
-		MVSTATUS_CODES hr2;
-		hr2 =  MVStartGrab(m_RightCamera.CameraHandle, RightCallbackFunction, (long)this); //设置回调函数
-		if (hr2 == MVST_SUCCESS)
-		{	
-			//原始图像
-			m_RightImage.BmpInfo->bmiHeader.biBitCount = m_RightImage.Bit;
-			m_RightImage.BmpInfo->bmiHeader.biWidth = m_RightImage.OriWidth;
-			m_RightImage.BmpInfo->bmiHeader.biHeight = m_RightImage.OriHeight;
-
-			//为图像显示的图像数据分配内存空间
-			delete[] m_RightImage.ShowDIBBits;
-			m_RightImage.ShowDIBBits = NULL;
-			m_RightImage.ShowDIBBits = new char[m_RightImage.OriWidth * m_RightImage.OriHeight * (m_RightImage.Bit/8)];
-
-			delete[] m_RightImage.OriDIBBits;
-			m_RightImage.OriDIBBits = NULL;
-			m_RightImage.OriDIBBits = new char[m_RightImage.OriWidth * m_RightImage.OriHeight * (m_RightImage.Bit/8)];
-
-			//为进行处理的图像赋值
-			m_RightImage.Width=m_RightImage.OriWidth;
-			m_RightImage.Height=m_RightImage.OriHeight;
-
-			delete[] m_RightImage.DIBBits;
-			m_RightImage.DIBBits = NULL;
-			m_RightImage.DIBBits = new char[m_RightImage.Width * m_RightImage.Height * (m_RightImage.Bit/8)];
-
-			//开始采集图像后，不再接受更新的“连续采集”指令
-			GetDlgItem(IDC_CapVideo2)->EnableWindow(false);
-			//GetDlgItem(IDC_Btn_SetCamera)->EnableWindow(false);
-		}
-	}
+	CapVideo(m_RightCamera, m_RightImage, IDC_CapVideo2, RightCallbackFunction);
 }
 
 void CBSVDlg::OnBnClickedSetcamera2()
