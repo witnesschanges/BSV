@@ -447,36 +447,42 @@ void CBSVDlg::DrawRightCamera()
 	m_RightCamera.Section.Unlock();
 }
 
-void CBSVDlg::OnBnClickedOpencamera()
+void CBSVDlg::OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId)
 {
-	// TODO: 在此添加控件通知处理程序代码
-	//启动左相机	
 	MVSTATUS_CODES hr;
-	if (m_LeftCamera.CameraHandle == NULL)	//启动相机
+	if (camera.CameraHandle == NULL)	//启动相机
 	{
-		hr = MVOpenCamByIndex(0, &m_LeftCamera.CameraHandle );
+		hr = MVOpenCamByIndex(0, &camera.CameraHandle);
 		if (hr != MVST_SUCCESS)
 		{
-			MessageBox("未找到相机，请确认设备连接和IP设置！","BSV",MB_ICONWARNING);
+			MessageBox("未找到相机，请确认设备连接和IP设置！", "BSV", MB_ICONWARNING);
 			return;
 		}
 		else if (hr == MVST_SUCCESS)
 		{
-			GetDlgItem(IDC_OpenCamera)->SetWindowText("关闭相机");
-			GetDlgItem(IDC_CapVideo)->EnableWindow(true);
-			GetDlgItem(IDC_SetCamera)->EnableWindow(true);
+			GetDlgItem(openCameraId)->SetWindowText("关闭相机");
+			GetDlgItem(capVideoId)->EnableWindow(true);
+			GetDlgItem(setCameraId)->EnableWindow(true);
 		}
 	}
 	else	//关闭相机
 	{
-		hr = MVStopGrab(m_LeftCamera.CameraHandle);
-		hr = MVCloseCam(m_LeftCamera.CameraHandle);
-		m_LeftCamera.CameraHandle = NULL;
+		hr = MVStopGrab(camera.CameraHandle);
+		hr = MVCloseCam(camera.CameraHandle);
+		camera.CameraHandle = NULL;
 
-		GetDlgItem(IDC_OpenCamera)->SetWindowText("启动相机");
-		GetDlgItem(IDC_CapVideo)->EnableWindow(false);
-		GetDlgItem(IDC_SetCamera)->EnableWindow(false);
+		GetDlgItem(openCameraId)->SetWindowText("启动相机");
+		GetDlgItem(capVideoId)->EnableWindow(false);
+		GetDlgItem(setCameraId)->EnableWindow(false);
 	}
+}
+
+void CBSVDlg::OnBnClickedOpencamera()
+{
+	// TODO: 在此添加控件通知处理程序代码
+	//启动左相机
+	OpenCamera(m_LeftCamera, IDC_OpenCamera, IDC_CapVideo, IDC_SetCamera);
+
 }
 
 void CBSVDlg::OnBnClickedCapvideo()
@@ -671,32 +677,7 @@ void CBSVDlg::OnBnClickedOpencamera2()
 {
 	// TODO: 在此添加控件通知处理程序代码
 	//启动右相机	
-	MVSTATUS_CODES hr;
-	if (m_RightCamera.CameraHandle == NULL)	//启动相机
-	{
-		hr = MVOpenCamByIndex(1, &m_RightCamera.CameraHandle );
-		if (hr != MVST_SUCCESS)
-		{
-			MessageBox("未找到相机，请确认设备连接和IP设置！","BSV",MB_ICONWARNING);
-			return;
-		}
-		else if (hr == MVST_SUCCESS)
-		{
-			GetDlgItem(IDC_OpenCamera2)->SetWindowText("关闭相机");
-			GetDlgItem(IDC_CapVideo2)->EnableWindow(true);
-			GetDlgItem(IDC_SetCamera2)->EnableWindow(true);
-		}
-	}
-	else	//关闭相机
-	{
-		hr = MVStopGrab(m_RightCamera.CameraHandle);
-		hr = MVCloseCam(m_RightCamera.CameraHandle);
-		m_RightCamera.CameraHandle = NULL;
-
-		GetDlgItem(IDC_OpenCamera2)->SetWindowText("启动相机");
-		GetDlgItem(IDC_CapVideo2)->EnableWindow(false);
-		GetDlgItem(IDC_SetCamera2)->EnableWindow(false);
-	}
+	OpenCamera(m_RightCamera, IDC_OpenCamera2, IDC_CapVideo2, IDC_SetCamera2);
 }
 
 void CBSVDlg::OnBnClickedCapvideo2()

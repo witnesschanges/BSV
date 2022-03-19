@@ -97,24 +97,28 @@ protected:
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
 	afx_msg void OnBnClickedOpencamera();
-	afx_msg void OnBnClickedCapvideo();
-	afx_msg void OnBnClickedSetcamera();
-	afx_msg void OnBnClickedCircledetect();
 	afx_msg void OnBnClickedOpencamera2();
+	afx_msg void OnBnClickedCapvideo();
 	afx_msg void OnBnClickedCapvideo2();
+	afx_msg void OnBnClickedSetcamera();
 	afx_msg void OnBnClickedSetcamera2();
-	afx_msg void OnBnClickedStopdetect();
-	afx_msg void OnBnClickedOpen2camera();
-	afx_msg void OnBnClickedCap2video();
-	afx_msg void OnTimer(UINT_PTR nIDEvent);
-	afx_msg void OnClose();
+	afx_msg void OnBnClickedCircledetect();
 	afx_msg void OnBnClickedCircledetect2();
-	afx_msg void OnBnClickedStopdetect2();
-	afx_msg void OnBnClickedCircle2detect();
-	afx_msg void OnBnClickedCalibration();
 	afx_msg void OnBnClickedSavepic();
 	afx_msg void OnBnClickedSavepic2();
+	afx_msg void OnBnClickedStopdetect();
+	afx_msg void OnBnClickedStopdetect2();
+	afx_msg void OnBnClickedCalibration();
 	afx_msg void OnBnClickedCalibration2();
+
+	afx_msg void OnBnClickedCircle2detect();
+	afx_msg void OnBnClickedOpen2camera();
+	afx_msg void OnBnClickedCap2video();
+
+	afx_msg void OnTimer(UINT_PTR nIDEvent);
+	afx_msg void OnClose();
+
+
 	DECLARE_MESSAGE_MAP()
 
 public:
@@ -133,6 +137,9 @@ public:
 	BOOL CalibFinishLeftCamera();
 	BOOL CalibFinishRightCamera();
 	void StopLeftCamera();
+
+public:
+	void OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId);
 
 public:
 	Camera m_LeftCamera;
