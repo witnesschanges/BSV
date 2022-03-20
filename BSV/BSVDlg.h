@@ -128,10 +128,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	void Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh, 
-		double highthresh, double AspectRatio, double Circularity);
-	void Detect_RightCircleDetect(InputArray SrcImg, double lowthresh, 
-		double highthresh, double AspectRatio, double Circularity);
 	void Blob_DenoisingLeftArea(int MinArea, int MaxArea);
 	void Blob_DenoisingRightArea(int MinArea, int MaxArea);
 	void ShowLeftCircles();
@@ -152,7 +148,9 @@ public:
 	void Savepic(Camera& camera, Image& image, bool isLeft);
 	void Calibrate(bool isLeft);
 
-	void Blob_ReleaseBlobSeq(CArray<Blob>& BlobSeq);
+	void ReleaseBlobSeq(CArray<Blob>& BlobSeq);
+	void DetectCircle(Camera& camera, InputArray srcImg, double lowthresh,
+		double highthresh, double aspectRatio, double circularity);
 
 public:
 	Camera m_LeftCamera;

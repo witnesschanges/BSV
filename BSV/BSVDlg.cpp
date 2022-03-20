@@ -191,8 +191,8 @@ void CBSVDlg::OnClose()
 		m_TimerFlag2 = NULL;
 	}
 
-	Blob_ReleaseBlobSeq(m_LeftCamera.BlobSeq);
-	Blob_ReleaseBlobSeq(m_RightCamera.BlobSeq);
+	ReleaseBlobSeq(m_LeftCamera.BlobSeq);
+	ReleaseBlobSeq(m_RightCamera.BlobSeq);
 
 	CDialogEx::OnClose();
 }
@@ -667,8 +667,8 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 			//固定阈值分割图像 lq:二值化图像
 			threshold(RFilImg, RBinImg, 100, 255, CV_THRESH_BINARY);
 			
-			Blob_ReleaseBlobSeq(m_RightCamera.BlobSeq);
-			Detect_RightCircleDetect(RBinImg, 0, 255, 0.6, 0.6);
+			ReleaseBlobSeq(m_RightCamera.BlobSeq);
+			DetectCircle(m_RightCamera, RBinImg, 0, 255, 0.6, 0.6);
 			Blob_DenoisingRightArea(1000, 8000);
 
 			if (!m_RightCamera.BlobSeq.IsEmpty())
@@ -718,7 +718,7 @@ void CBSVDlg::OnBnClickedCap2video()
 *参数说明
 CPtrArray* BlobSeq	   待释放内存的团块队列。
 */
-void CBSVDlg::Blob_ReleaseBlobSeq(CArray<Blob>& blobSeq)
+void CBSVDlg::ReleaseBlobSeq(CArray<Blob>& blobSeq)
 {
 	if (!blobSeq.IsEmpty())
 	{
@@ -727,46 +727,45 @@ void CBSVDlg::Blob_ReleaseBlobSeq(CArray<Blob>& blobSeq)
 	}
 }
 
+
+
 /*
 *函数功能：检测圆形特征
 *参数说明
-const CvArr* SrcImage         待处理的灰度图像或二值化图像
+const CvArr* srcImage         待处理的灰度图像或二值化图像
 double lowthresh, highthresh  自适应Canny边缘检测的高低阈值
-int LeastPixelNum             目标轮廓包含的最小像素点数目
-double AspectRatio            纵横比
-double Circularity            圆形度
+double aspectRatio            纵横比
+double circularity            圆形度
 */
-/*左相机检测圆形*/
-void CBSVDlg::Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh, 
-	double highthresh, double AspectRatio, double Circularity)
+void CBSVDlg::DetectCircle(Camera &camera, InputArray srcImg, double lowthresh,
+	double highthresh, double aspectRatio, double circularity)
 {
-	Mat EdgeImg;
-	Canny(SrcImg, EdgeImg, lowthresh, highthresh);
+	Mat edgeImg;
+	Canny(srcImg, edgeImg, lowthresh, highthresh);
 	vector<vector<Point>> contours;
 	vector<Vec4i> hierarchy;
-	findContours(EdgeImg, contours, hierarchy, CV_RETR_LIST,
-		CV_CHAIN_APPROX_NONE, cvPoint(0,0));
-	EdgeImg.release();
+	findContours(edgeImg, contours, hierarchy, CV_RETR_LIST, CV_CHAIN_APPROX_NONE, cvPoint(0, 0));
+	edgeImg.release();
 
 	double area, length, cir, width, height, asp;
 	RotatedRect rect;
 	int cnt = 0;
 	int ln = contours.size();
-	m_LeftCamera.BlobSeq.SetSize(ln,10);
-	for (int i=0; i<ln; i++)
+	camera.BlobSeq.SetSize(ln, 10);
+	for (int i = 0; i < ln; i++)
 	{
 		if (contours[i].size() > 10)
 		{
 			area = contourArea(contours[i]);		//第i个轮廓的面积
-			length = arcLength(contours[i],true);	//第i个轮廓的周长
-			cir = (12.56*area)/(length*length);		//第i个轮廓的圆形度
-			if (cir > Circularity)
+			length = arcLength(contours[i], true);	//第i个轮廓的周长
+			cir = (12.56 * area) / (length * length);		//第i个轮廓的圆形度
+			if (cir > circularity)
 			{
 				rect = fitEllipse(contours[i]);
 				width = rect.size.width;	//外接矩形的宽度
 				height = rect.size.height;	//外接矩形的高度
-				asp = height/width;			//纵横比
-				if (asp>AspectRatio && asp<(1.0/AspectRatio))
+				asp = height / width;			//纵横比
+				if (asp > aspectRatio && asp < (1.0 / aspectRatio))
 				{
 					Blob pB;
 					pB.BlobWidth = width;
@@ -778,64 +777,13 @@ void CBSVDlg::Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh,
 					pB.BlobX = rect.center.x;
 					pB.BlobY = rect.center.y;
 
-					m_LeftCamera.BlobSeq.SetAtGrow(cnt,pB);
+					camera.BlobSeq.SetAtGrow(cnt, pB);
 					cnt++;
 				}
 			}
 		}
 	}
-	m_LeftCamera.BlobSeq.FreeExtra();
-}
-
-/*右相机检测圆形*/
-void CBSVDlg::Detect_RightCircleDetect(InputArray SrcImg, double lowthresh, 
-	double highthresh, double AspectRatio, double Circularity)
-{
-	Mat EdgeImg;
-	Canny(SrcImg, EdgeImg, lowthresh, highthresh);
-	vector<vector<Point>> contours;
-	vector<Vec4i> hierarchy;
-	findContours(EdgeImg, contours, hierarchy, CV_RETR_LIST,
-		CV_CHAIN_APPROX_NONE, cvPoint(0,0));
-	EdgeImg.release();
-
-	double area, length, cir, width, height, asp;
-	RotatedRect rect;
-	int cnt = 0;
-	int ln = contours.size();
-	m_RightCamera.BlobSeq.SetSize(ln,10);
-	for (int i=0; i<ln; i++)
-	{
-		if (contours[i].size() > 10)
-		{
-			area = contourArea(contours[i]);		//第i个轮廓的面积
-			length = arcLength(contours[i],true);	//第i个轮廓的周长
-			cir = (12.56*area)/(length*length);		//第i个轮廓的圆形度
-			if (cir > Circularity)
-			{
-				rect = fitEllipse(contours[i]);
-				width = rect.size.width;	//外接矩形的宽度
-				height = rect.size.height;	//外接矩形的高度
-				asp = height/width;			//纵横比
-				if (asp>AspectRatio && asp<(1.0/AspectRatio))
-				{
-					Blob pB;
-					pB.BlobWidth = width;
-					pB.BlobHeight = height;
-					pB.Area = area;
-					pB.Perimeter = length;
-					pB.AspectRatio = asp;
-					pB.Circularity = cir;
-					pB.BlobX = rect.center.x;
-					pB.BlobY = rect.center.y;
-
-					m_RightCamera.BlobSeq.SetAtGrow(cnt,pB);
-					cnt++;
-				}
-			}
-		}
-	}
-	m_RightCamera.BlobSeq.FreeExtra();
+	camera.BlobSeq.FreeExtra();
 }
 
 ////*函数功能：定时器2回调函数
