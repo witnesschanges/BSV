@@ -554,22 +554,26 @@ void CBSVDlg::OnBnClickedSetcamera()
 	SetCamera(m_LeftCamera);
 }
 
-void CBSVDlg::OnBnClickedCircledetect()
+void CBSVDlg::Circledetect(Image image, UINT_PTR nIDEvent, UINT nElapse, bool timerflag, UINT32 circleDetectId, UINT32 stopDetectId)
 {
-	// TODO: 在此添加控件通知处理程序代码
-	if (m_LeftImage.ShowDIBBits == NULL)
+	if (image.ShowDIBBits == NULL)
 	{
-		MessageBox("无图像数据！","BSV",MB_ICONWARNING);
+		MessageBox("无图像数据！", "BSV", MB_ICONWARNING);
 		return;
 	}
 	else
 	{
-		SetTimer(1, 300, NULL);//设置定时器1
-		m_TimerFlag = true;
+		SetTimer(nIDEvent, nElapse, NULL);//设置定时器
+		timerflag = true;
 
-		GetDlgItem(IDC_CircleDetect)->EnableWindow(false);
-		GetDlgItem(IDC_StopDetect)->EnableWindow(true);
+		GetDlgItem(circleDetectId)->EnableWindow(false);
+		GetDlgItem(stopDetectId)->EnableWindow(true);
 	}
+}
+
+void CBSVDlg::OnBnClickedCircledetect()
+{
+	Circledetect(m_LeftImage, 1, 300, m_TimerFlag, IDC_CircleDetect, IDC_StopDetect);
 }
 
 void CBSVDlg::OnBnClickedStopdetect()
@@ -985,20 +989,7 @@ void CBSVDlg::ShowRightCircles()
 
 void CBSVDlg::OnBnClickedCircledetect2()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	if (m_RightImage.ShowDIBBits == NULL)
-	{
-		MessageBox("无图像数据！","BSV",MB_ICONWARNING);
-		return;
-	}
-	else
-	{
-		SetTimer(2, 300, NULL);//lq:设置定时器2
-		m_TimerFlag2 = true;
-
-		GetDlgItem(IDC_CircleDetect2)->EnableWindow(false);
-		GetDlgItem(IDC_StopDetect2)->EnableWindow(true);
-	}
+	Circledetect(m_RightImage, 2, 300, m_TimerFlag2, IDC_CircleDetect2, IDC_StopDetect2);
 }
 
 void CBSVDlg::OnBnClickedStopdetect2()

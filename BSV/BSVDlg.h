@@ -143,6 +143,7 @@ public:
 	void OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId);
 	void CapVideo(Camera &camera, Image image, UINT32 capVideoId, int (*StreamCB)(MV_IMAGE_INFO*, long nUserVal));
 	void SetCamera(Camera& camera);
+	void Circledetect(Image image, UINT_PTR nIDEvent, UINT nElapse, bool timerflag, UINT32 circleDetectId, UINT32 stopDetectId);
 
 public:
 	Camera m_LeftCamera;
