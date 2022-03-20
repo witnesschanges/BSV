@@ -306,7 +306,7 @@ int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 		g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
 
 		g_pBSVDlg->m_LeftImage.BufHandle = true;//左图像可以进行处理标识
-		g_pBSVDlg->DrawLeftCamera();
+		g_pBSVDlg->DrawCamera(g_pBSVDlg->m_LeftCamera, g_pBSVDlg->m_LeftImage, IDC_LeftPic);
 	}
 	return 1;
 }
@@ -360,40 +360,40 @@ int RightCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
 		g_pBSVDlg->m_RightCamera.SectionCopy.Unlock();
 
 		g_pBSVDlg->m_RightImage.BufHandle = true;//左图像可以进行处理标识
-		g_pBSVDlg->DrawRightCamera();
+		g_pBSVDlg->DrawCamera(g_pBSVDlg->m_RightCamera, g_pBSVDlg->m_RightImage, IDC_RightPic);
 	}
 	return 1;
 }
 
 /*
-*函数说明：显示左相机图像
+*函数说明：显示相机图像
 *输入参数：无
 *          
 *输出参数：无。
 *返 回 值：无。
 */
-void CBSVDlg::DrawLeftCamera()
+void CBSVDlg::DrawCamera(Camera &camera, Image &image, UINT32 picId)
 {
-	m_LeftCamera.Section.Lock();
-	CDC *pdc = GetDlgItem(IDC_LeftPic)->GetDC();//获得DC
+	camera.Section.Lock();
+	CDC* pdc = GetDlgItem(picId)->GetDC();//获得DC
 	CRect rc;
-	GetDlgItem(IDC_LeftPic)->GetClientRect(&rc);//获得图像显示区域
-	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR );//设置模式
+	GetDlgItem(picId)->GetClientRect(&rc);//获得图像显示区域
+	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR);//设置模式
 
 	//显示图像
-	::StretchDIBits(pdc->GetSafeHdc(), 0, 0, rc.Width(),rc.Height(),
-		0,0,m_LeftImage.OriWidth,m_LeftImage.OriHeight,
-		m_LeftImage.ShowDIBBits,(LPBITMAPINFO) m_LeftImage.BmpInfo, DIB_RGB_COLORS, SRCCOPY); 
-	
+	::StretchDIBits(pdc->GetSafeHdc(), 0, 0, rc.Width(), rc.Height(),
+		0, 0, image.OriWidth, image.OriHeight,
+		image.ShowDIBBits, (LPBITMAPINFO)image.BmpInfo, DIB_RGB_COLORS, SRCCOPY);
+
 	//显示十字参考线
 	//CPen pPenBlue;
 	//pPenBlue.CreatePen(PS_SOLID,1,RGB(0,0,128));
 	//CPen *pOldPen=pdc->SelectObject(&pPenBlue);
-	//double dbRateX = (double)rc.Width() /(double)m_LeftImage.Width;
-	//double dbRateY = (double)rc.Height() /(double)m_LeftImage.Height;
-	//double x1 = m_LeftImage.Width*dbRateX;
+	//double dbRateX = (double)rc.Width() /(double)image.Width;
+	//double dbRateY = (double)rc.Height() /(double)image.Height;
+	//double x1 = image.Width*dbRateX;
 	//double x2 = x1/2;
-	//double y1 = m_LeftImage.Height*dbRateY;
+	//double y1 = image.Height*dbRateY;
 	//double y2 = y1/2;
 	//pdc->MoveTo (0,y2);
 	//pdc->LineTo (x1,y2);
@@ -402,49 +402,8 @@ void CBSVDlg::DrawLeftCamera()
 	//pdc->SelectObject(pOldPen);
 	//pPenBlue.DeleteObject();
 
-	GetDlgItem(IDC_LeftPic)->ReleaseDC(pdc);	
-	m_LeftCamera.Section.Unlock();
-}
-
-/*
-*函数说明：显示右相机图像
-*输入参数：无
-*          
-*输出参数：无。
-*返 回 值：无。
-*/
-void CBSVDlg::DrawRightCamera()
-{
-	m_RightCamera.Section.Lock();
-	CDC *pdc = GetDlgItem(IDC_RightPic)->GetDC();//获得DC
-	CRect rc;
-	GetDlgItem(IDC_RightPic)->GetClientRect(&rc);//获得图像显示区域
-	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR ) ;//设置模式
-
-	//显示图像
-	::StretchDIBits(pdc->GetSafeHdc(), 0, 0, rc.Width(),rc.Height(),
-		0,0,m_RightImage.OriWidth,m_RightImage.OriHeight,
-		m_RightImage.ShowDIBBits,(LPBITMAPINFO) m_RightImage.BmpInfo, DIB_RGB_COLORS, SRCCOPY); 
-	
-	//显示十字参考线
-	//CPen pPenBlue;
-	//pPenBlue.CreatePen(PS_SOLID,1,RGB(0,0,128));
-	//CPen *pOldPen=pdc->SelectObject(&pPenBlue);
-	//double dbRateX = (double)rc.Width() /(double)m_RightImage.Width;
-	//double dbRateY = (double)rc.Height() /(double)m_RightImage.Height;
-	//double x1 = m_RightImage.Width*dbRateX;
-	//double x2 = x1/2;
-	//double y1 = m_RightImage.Height*dbRateY;
-	//double y2 = y1/2;
-	//pdc->MoveTo (0,y2);
-	//pdc->LineTo (x1,y2);
-	//pdc->MoveTo (x2,0);
-	//pdc->LineTo (x2,y1);
-	//pdc->SelectObject(pOldPen);
-	//pPenBlue.DeleteObject();
-
-	GetDlgItem(IDC_RightPic)->ReleaseDC(pdc);	
-	m_RightCamera.Section.Unlock();
+	GetDlgItem(picId)->ReleaseDC(pdc);
+	camera.Section.Unlock();
 }
 
 void CBSVDlg::OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId)
@@ -637,7 +596,7 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 			
 			if (!m_LeftCamera.BlobSeq.IsEmpty())
 			{
-				ShowLeftCircles();
+				ShowCircles(m_LeftCamera, m_LeftImage, IDC_LeftPic);
 			}
 			LSrcImg.release();
 			LFilImg.release();
@@ -673,7 +632,7 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 
 			if (!m_RightCamera.BlobSeq.IsEmpty())
 			{
-				ShowRightCircles();
+				ShowCircles(m_RightCamera, m_RightImage, IDC_RightPic);
 			}
 			RSrcImg.release();
 			RFilImg.release();
@@ -817,93 +776,46 @@ void CBSVDlg::DenoisingBlobArea(CArray<Blob> &blob, int minArea, int maxArea)
 	}
 }
 
-void CBSVDlg::ShowLeftCircles()
+void CBSVDlg::ShowCircles(Camera &camera, Image &image, UINT32 picId)
 {
-	CDC *pdc = GetDlgItem(IDC_LeftPic)->GetDC();		//获得ＤＣ
+	CDC* pdc = GetDlgItem(picId)->GetDC();//获得ＤＣ
 	CRect rc;
-	GetDlgItem(IDC_LeftPic)->GetClientRect(&rc);		//获得图像显示区域
-	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR ) ;	//设置模式
+	GetDlgItem(picId)->GetClientRect(&rc);//获得图像显示区域
+	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR);//设置模式
 
 	// 创建红色画笔对象
-	CBrush BrushRed(RGB(255, 0, 0));
-	CBrush *pOldBrush;
-	pOldBrush = pdc->SelectObject(&BrushRed);
+	CBrush brushRed(RGB(255, 0, 0));
+	CBrush* pOldBrush = pdc->SelectObject(&brushRed);
 
-	double dbRateX = (double)rc.Width()/(double)m_LeftImage.OriWidth;
-	double dbRateY = (double)rc.Height()/(double)m_LeftImage.OriHeight;
-	int ln = m_LeftCamera.BlobSeq.GetSize();
-	for (int i=0;i<ln;i++)
+	double dbRateX = (double)rc.Width() / (double)image.OriWidth;
+	double dbRateY = (double)rc.Height() / (double)image.OriHeight;
+	int ln = camera.BlobSeq.GetSize();
+	for (int i = 0; i < ln; i++)
 	{
-		Blob pB = m_LeftCamera.BlobSeq.GetAt(i);
-		int x, y;
-		x = (int)(pB.BlobX*dbRateX);
-		y = (int)((m_LeftImage.OriHeight - pB.BlobY)*dbRateY);
-		if(x<6)
+		Blob pB = camera.BlobSeq.GetAt(i);
+		int x = (int)(pB.BlobX * dbRateX);
+		int y = (int)((image.OriHeight - pB.BlobY) * dbRateY);
+		if (x < 6)//Magic number
 		{
 			x = 6;
 		}
-		else if(x>rc.Width()-6)
+		else if (x > rc.Width() - 6)
 		{
-			x = rc.Width()-6;
+			x = rc.Width() - 6;
 		}
-		if(y<6)
-		{
-			y = 6;
-		}
-		else if(y>rc.Height() - 6)
-		{
-			y = rc.Height()-6;
-		}
-		pdc->Ellipse(x-5, y-5, x+5, y+5);
-	}
-
-	pdc->SelectObject(pOldBrush);
-	BrushRed.DeleteObject();
-	ReleaseDC(pdc);
-}
-
-void CBSVDlg::ShowRightCircles()
-{
-	CDC *pdc = GetDlgItem(IDC_RightPic)->GetDC();		//获得ＤＣ
-	CRect rc;
-	GetDlgItem(IDC_RightPic)->GetClientRect(&rc);		//获得图像显示区域
-	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR ) ;	//设置模式
-
-	// 创建红色画笔对象
-	CBrush BrushRed(RGB(255, 0, 0));
-	CBrush *pOldBrush;
-	pOldBrush = pdc->SelectObject(&BrushRed);
-
-	double dbRateX = (double)rc.Width()/(double)m_RightImage.OriWidth;
-	double dbRateY = (double)rc.Height()/(double)m_RightImage.OriHeight;
-	int ln = m_RightCamera.BlobSeq.GetSize();
-	for (int i=0;i<ln;i++)
-	{
-		Blob pB = m_RightCamera.BlobSeq.GetAt(i);
-		int x, y;
-		x = (int)(pB.BlobX*dbRateX);
-		y = (int)((m_RightImage.OriHeight - pB.BlobY)*dbRateY);
-		if(x<6)
-		{
-			x = 6;
-		}
-		else if(x>rc.Width()-6)
-		{
-			x = rc.Width()-6;
-		}
-		if(y<6)
+		if (y < 6)
 		{
 			y = 6;
 		}
-		else if(y>rc.Height() - 6)
+		else if (y > rc.Height() - 6)
 		{
-			y = rc.Height()-6;
+			y = rc.Height() - 6;
 		}
-		pdc->Ellipse(x-5, y-5, x+5, y+5);
+		pdc->Ellipse(x - 5, y - 5, x + 5, y + 5);
 	}
 
 	pdc->SelectObject(pOldBrush);
-	BrushRed.DeleteObject();
+	brushRed.DeleteObject();
 	ReleaseDC(pdc);
 }
 

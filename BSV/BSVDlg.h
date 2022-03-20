@@ -128,15 +128,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	void ShowLeftCircles();
-	void ShowRightCircles();
-	void DrawLeftCamera();
-	void DrawRightCamera();
-	BOOL CalibFinishLeftCamera();
-	BOOL CalibFinishRightCamera();
-	void StopLeftCamera();
-
-public:
 	//todo£ºbusiness logic seperate from prentation logic
 	void OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId);
 	void CapVideo(Camera &camera, Image &image, UINT32 capVideoId, int (*StreamCB)(MV_IMAGE_INFO*, long nUserVal));
@@ -150,6 +141,8 @@ public:
 	void DetectCircle(Camera& camera, InputArray srcImg, double lowthresh,
 		double highthresh, double aspectRatio, double circularity);
 	void DenoisingBlobArea(CArray<Blob> &blob, int minArea, int maxArea);
+	void ShowCircles(Camera& camera, Image& image, UINT32 openCameraId);
+	void DrawCamera(Camera& camera, Image& image, UINT32 picId);
 
 public:
 	Camera m_LeftCamera;
