@@ -128,8 +128,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	void Blob_DenoisingLeftArea(int MinArea, int MaxArea);
-	void Blob_DenoisingRightArea(int MinArea, int MaxArea);
 	void ShowLeftCircles();
 	void ShowRightCircles();
 	void DrawLeftCamera();
@@ -151,6 +149,7 @@ public:
 	void ReleaseBlobSeq(CArray<Blob>& BlobSeq);
 	void DetectCircle(Camera& camera, InputArray srcImg, double lowthresh,
 		double highthresh, double aspectRatio, double circularity);
+	void DenoisingBlobArea(CArray<Blob> &blob, int minArea, int maxArea);
 
 public:
 	Camera m_LeftCamera;

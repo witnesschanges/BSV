@@ -669,7 +669,7 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 			
 			ReleaseBlobSeq(m_RightCamera.BlobSeq);
 			DetectCircle(m_RightCamera, RBinImg, 0, 255, 0.6, 0.6);
-			Blob_DenoisingRightArea(1000, 8000);
+			DenoisingBlobArea(m_RightCamera.BlobSeq, 1000, 8000);
 
 			if (!m_RightCamera.BlobSeq.IsEmpty())
 			{
@@ -795,46 +795,25 @@ void CBSVDlg::DetectCircle(Camera &camera, InputArray srcImg, double lowthresh,
 /*
 *函数功能：清除团块队列中面积不在指定范围内的团块数据
 *参数说明
-CPtrArray* BlobSeq     待处理的团块队列
-int MinArea,MaxArea    指定的团块面积范围
+CPtrArray* blobSeq     待处理的团块队列
+int minArea, maxArea    指定的团块面积范围
 */
-/*左相机*/
-void CBSVDlg::Blob_DenoisingLeftArea(int MinArea, int MaxArea)
+void CBSVDlg::DenoisingBlobArea(CArray<Blob> &blob, int minArea, int maxArea)
 {
-	if (!m_LeftCamera.BlobSeq.IsEmpty())
+	if (!blob.IsEmpty())
 	{
-		int ln = m_LeftCamera.BlobSeq.GetSize();;
-		for (int i=0; i<ln; i++)
+		int ln = blob.GetSize();
+		for (int i = 0; i < ln; i++)
 		{
-			Blob pB = m_LeftCamera.BlobSeq.GetAt(i);
-			if (pB.Area<MinArea || pB.Area>MaxArea)
+			Blob pB = blob.GetAt(i);
+			if (pB.Area < minArea || pB.Area > maxArea)
 			{
-				m_LeftCamera.BlobSeq.RemoveAt(i);
+				blob.RemoveAt(i);
 				i--;
 				ln--;
 			}
 		}
-		m_LeftCamera.BlobSeq.FreeExtra();
-	}
-}
-
-/*右相机*/
-void CBSVDlg::Blob_DenoisingRightArea(int MinArea, int MaxArea)
-{
-	if (!m_RightCamera.BlobSeq.IsEmpty())
-	{
-		int ln = m_RightCamera.BlobSeq.GetSize();;
-		for (int i=0; i<ln; i++)
-		{
-			Blob pB = m_RightCamera.BlobSeq.GetAt(i);
-			if (pB.Area<MinArea || pB.Area>MaxArea)
-			{
-				m_RightCamera.BlobSeq.RemoveAt(i);
-				i--;
-				ln--;
-			}
-		}
-		m_RightCamera.BlobSeq.FreeExtra();
+		blob.FreeExtra();
 	}
 }
 
