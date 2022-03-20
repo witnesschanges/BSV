@@ -18,12 +18,19 @@ using namespace cv;
 #define WaitOutTime 3000
 #define pi 3.141592653
 
+enum CameraType
+{
+	Left,
+	Right
+};
+
 class Camera
 {
 public:
 	void Initial();
 public:
 	HANDLE CameraHandle;//相机句柄
+	CameraType type; // todo: 用enum类型替换flag
 	CCriticalSection Section;//相机采图临界区
 	CCriticalSection SectionCopy;//相机采图临界区
 	int ImageIndex;//相机采集图片序号标志
@@ -141,9 +148,11 @@ public:
 public:
 	//todo：business logic seperate from prentation logic
 	void OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId);
-	void CapVideo(Camera &camera, Image image, UINT32 capVideoId, int (*StreamCB)(MV_IMAGE_INFO*, long nUserVal));
+	void CapVideo(Camera &camera, Image &image, UINT32 capVideoId, int (*StreamCB)(MV_IMAGE_INFO*, long nUserVal));
 	void SetCamera(Camera& camera);
-	void Circledetect(Image image, UINT_PTR nIDEvent, UINT nElapse, bool timerflag, UINT32 circleDetectId, UINT32 stopDetectId);
+	void Circledetect(Image &image, UINT_PTR nIDEvent, UINT nElapse, bool timerflag, UINT32 circleDetectId, UINT32 stopDetectId);
+	void Stopdetect(bool timerFlag, UINT_PTR nIDEvent, UINT32 circleDetectId, UINT32 stopDetectId);
+	void Savepic(Camera& camera, Image& image, bool isLeft);
 
 public:
 	Camera m_LeftCamera;

@@ -484,7 +484,7 @@ void CBSVDlg::OnBnClickedOpencamera()
 
 }
 
-void CBSVDlg::CapVideo(Camera& camera, Image image, UINT32 capVideoId, int (*CallBackFunc)(MV_IMAGE_INFO*, long nUserVal))
+void CBSVDlg::CapVideo(Camera& camera, Image &image, UINT32 capVideoId, int (*CallBackFunc)(MV_IMAGE_INFO*, long nUserVal))
 {
 	if (camera.CameraHandle != NULL)
 	{
@@ -554,7 +554,7 @@ void CBSVDlg::OnBnClickedSetcamera()
 	SetCamera(m_LeftCamera);
 }
 
-void CBSVDlg::Circledetect(Image image, UINT_PTR nIDEvent, UINT nElapse, bool timerflag, UINT32 circleDetectId, UINT32 stopDetectId)
+void CBSVDlg::Circledetect(Image &image, UINT_PTR nIDEvent, UINT nElapse, bool timerflag, UINT32 circleDetectId, UINT32 stopDetectId)
 {
 	if (image.ShowDIBBits == NULL)
 	{
@@ -576,17 +576,23 @@ void CBSVDlg::OnBnClickedCircledetect()
 	Circledetect(m_LeftImage, 1, 300, m_TimerFlag, IDC_CircleDetect, IDC_StopDetect);
 }
 
-void CBSVDlg::OnBnClickedStopdetect()
+void CBSVDlg::Stopdetect(bool timerFlag, UINT_PTR nIDEvent, UINT32 circleDetectId, UINT32 stopDetectId)
 {
-	// TODO: 在此添加控件通知处理程序代码
-	if (m_TimerFlag)
+	if (timerFlag)
 	{
-		KillTimer(1);
-		m_TimerFlag = false;
+		KillTimer(nIDEvent);
+		timerFlag = false;
 	}
 
-	GetDlgItem(IDC_CircleDetect)->EnableWindow(true);
-	GetDlgItem(IDC_StopDetect)->EnableWindow(false);
+	//todo: use a general method and id array to do this kind of work
+	GetDlgItem(circleDetectId)->EnableWindow(true);
+	GetDlgItem(stopDetectId)->EnableWindow(false);
+}
+
+
+void CBSVDlg::OnBnClickedStopdetect()
+{
+	Stopdetect(m_TimerFlag, 1, IDC_CircleDetect, IDC_StopDetect);
 }
 
 /*
@@ -1385,74 +1391,45 @@ void CBSVDlg::OnBnClickedCalibration2()
 	CalibrationLeft(A,B,m_Calibration.RowCornerNum,m_Calibration.ColumCornerNum,m_Calibration.GridWidth,m_Calibration.GridHeight);
 }
 
-void CBSVDlg::OnBnClickedSavepic()
+void CBSVDlg::Savepic(Camera &camera, Image &image, bool isLeft)
 {
-	// TODO: 在此添加控件通知处理程序代码
-	//保存图像在Ori_LImage中，并为图片命名Lchess*.bmp
-	if(m_LeftCamera.CameraHandle == NULL)
+	if (camera.CameraHandle == NULL)
 	{
-		AfxMessageBox("没有打开左相机");
+		AfxMessageBox("没有打开相机");
 		return;
 	}
-	m_LeftCamera.ImageIndex++;
+	camera.ImageIndex++;
 
-	if( m_LeftCamera.PixelFormat != PixelFormat_Mono8 )
+	if (camera.PixelFormat != PixelFormat_Mono8)
 		return;
-	Mat LImg;
-	LImg.create(m_LeftImage.OriHeight, m_LeftImage.OriWidth, CV_8UC1);
 
-	g_pBSVDlg->m_LeftCamera.SectionCopy.Lock();
-	memcpy(LImg.data,m_LeftImage.ShowDIBBits,m_LeftImage.OriWidth*m_LeftImage.OriHeight*(m_LeftImage.Bit/8));
-	g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
+	Mat Img;
+	Img.create(image.OriHeight, image.OriWidth, CV_8UC1);
+	camera.SectionCopy.Lock();
+	memcpy(Img.data, image.ShowDIBBits, image.OriWidth * image.OriHeight * (image.Bit / 8));
+	camera.SectionCopy.Unlock();
 
 	std::stringstream StrStm;
 	string imageFileName;
 	StrStm.clear();
- 	imageFileName.clear();
-	string LfilePath="Ori_LImage\\chess";
-	StrStm << m_LeftCamera.ImageIndex;
- 	StrStm>>imageFileName;
-	LfilePath += imageFileName;
-	LfilePath+= ".bmp";
-	imwrite(LfilePath,LImg);
+	imageFileName.clear();
+	string filePath = isLeft ? "Ori_LImage\\chess" : "Ori_RImage\\chess";
+	StrStm << camera.ImageIndex;
+	StrStm >> imageFileName;
+	filePath += imageFileName;
+	filePath += ".bmp";
+	imwrite(filePath, Img);
+}
+
+void CBSVDlg::OnBnClickedSavepic()
+{
+	Savepic(m_LeftCamera, m_LeftImage, true);
 }
 
 void CBSVDlg::OnBnClickedSavepic2()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	if(m_RightCamera.CameraHandle == NULL)
-	{
-		AfxMessageBox("没有打开右相机");
-		return;
-	}
-	m_RightCamera.ImageIndex++;
-
-	if( m_RightCamera.PixelFormat != PixelFormat_Mono8 )
-				return;
-	Mat RImg;
-	RImg.create(m_RightImage.OriHeight, m_RightImage.OriWidth, CV_8UC1);
-
-	g_pBSVDlg->m_RightCamera.SectionCopy.Lock();
-	memcpy(RImg.data,m_RightImage.ShowDIBBits,m_RightImage.OriWidth*m_RightImage.OriHeight*(m_RightImage.Bit/8));
-	g_pBSVDlg->m_RightCamera.SectionCopy.Unlock();
-
-	std::stringstream StrStm;
-	string imageFileName;
-	StrStm.clear();
- 	imageFileName.clear();
-	string RfilePath="Ori_RImage\\chess";
-	StrStm << m_RightCamera.ImageIndex;
- 	StrStm>>imageFileName;
-	RfilePath += imageFileName;
-	RfilePath+= ".bmp";
-	imwrite(RfilePath,RImg);
+	Savepic(m_RightCamera, m_RightImage, true);
 }
-
-//void CBSVDlg::OnBnClickedButton2()
-//{
-//	// TODO: 在此添加控件通知处理程序代码
-//	
-//}
 
 void Image::Initial()
 {
