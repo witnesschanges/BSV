@@ -1052,343 +1052,35 @@ CString format_fraction(double data)
 		return result;
 	}
 }
-///*
-//*函数说明：左相机标定完成函数。
-//*输入参数：无
-//*输出参数: 无
-//*返 回 值：TRUE表示标定成功,FALSE表示失败。
-//*/
-//BOOL CBSVDlg::CalibFinishLeftCamera()
-//{
-//	//清除记录左图像特征圆坐标点
-//	Blob_ReleaseLeftBlobSeq();	//lq:有改动
-//	//清除记录各个图像的标靶坐标
-//	m_LeftCalibration.CalibDraw = false;//置绘制左相机标定标志
-//	OnPaint();
-//
-//    int left_num=0;
-//	left_num=m_LeftCalibration.CoordSeq.GetSize();
-//	
-//	//相机标定参数
-//	CString strCalibrate = "";
-//	double zero(0.0);
-//	double unit(1.0);
-//	double **left_re = NULL;
-//	left_re=new double*[left_num];
-//	int k;
-//	for (k=0;k<left_num;k++)
-//	{
-//		left_re[k]=new double[99];
-//	}
-//	intrinsic_calibration_result leftICR;
-//	
-//    CPtrArray * leftx = & m_LeftCalibration.CoordSeq;
-//	if (!Calibration_LeftCamera(leftx,leftICR,left_re))
-//	{
-//		for (int i=0;i<m_LeftCalibration.CoordSeq.GetSize();i++)
-//		{
-//			Image_Coordation*	pIC;
-//			pIC=(Image_Coordation*)m_LeftCalibration.CoordSeq.GetAt(i);
-//			delete pIC;
-//			pIC=NULL;
-//		}
-//		m_LeftCalibration.CoordSeq.RemoveAll();	
-//		if(left_re != NULL)
-//		{
-//			for (k=0;k<left_num;k++)
-//			{
-//				delete []left_re[k];
-//				left_re[k] = NULL;
-//			}
-//			delete []left_re;
-//			left_re = NULL;
-//		}
-//    	GetDlgItem(IDC_LIST_BVS_ListFinish)->ShowWindow(SW_HIDE);//标定完成数据显示List
-//	    m_static_FinishText.ShowWindow(SW_SHOW);//标定完成提示静态框
-//
-//		m_static_FinishText.SetWindowText(STR_CalibFailText);//STR_CalibFailText应该指的是“标定失败”
-//
-//		return false; 
-//	}
-//	else
-//	{
-//		GetDlgItem(IDC_STATIC_ShouDInfor)->ShowWindow(SW_HIDE);
-//		GetDlgItem(IDC_LIST_BVS_ListFinish)->ShowWindow(SW_SHOW);//标定完成数据显示List
-//		m_static_FinishText.ShowWindow(SW_SHOW);//标定完成提示静态框
-//		
-//		int left_grade;
-//		CString ColumnName;
-//		left_grade=Calibration_ComputeEvaluate(left_re,left_num);
-//		
-//		//显示相机标定参数
-//	
-//
-//		CString s;
-//		s.Format("%s\n%s\nk1=%s, k2=%s\n",STR_LCalibFinishText_1,STR_LCalibFinishText_2,format_fraction(leftICR.k1), format_fraction(leftICR.k2)) ;
-//	//	s.Format("左像机标定结果:\n畸变系数:\nk1=%s, k2=%s\n",format_fraction(leftICR.k1), format_fraction(leftICR.k2)) ;
-//	
-//		strCalibrate += s;
-//		
-//		s.Format("%s\n",STR_LCalibFinishText_3);
-//	//	s = "左像机内参矩阵A:\n";
-//		strCalibrate += s;
-//		
-//		s.Format("%s %s  %s\n%s %s  %s\n%s %s  %s\n",format_fraction(leftICR.fx) , format_fraction(leftICR.skewness), 
-//			format_fraction(leftICR.u0), format_fraction(zero),  format_fraction(leftICR.fy),
-//			format_fraction(leftICR.v0), format_fraction(zero), format_fraction(zero), format_fraction(unit));
-//		strCalibrate += s;
-//		
-//		s.Format("%s%s",STR_LCalibFinishText_4,g_strEvaluate[left_grade]);
-//	//	s = "左像机评估结果:" + strEvaluate[left_grade];
-//		strCalibrate += s;
-//		m_static_FinishText.SetWindowText(strCalibrate);
-//
-//		//清空所有列
-//		while(m_list_Finish.DeleteColumn(0))
-//		{
-//			
-//		}
-//		m_list_Finish.DeleteAllItems();
-//		m_list_Finish.InsertColumn(0, STR_LCalibFinishList_1,LVCFMT_IMAGE|LVCFMT_LEFT);  //插入第1列
-//		
-//		//如果只标定左像机
-//		int i;
-//		for (i = 1; i <= left_num; i++)
-//		{
-//			ColumnName.Format("%s%d",STR_LCalibFinishList_2, i);
-//			m_list_Finish.InsertColumn(i, ColumnName);//插入第1列
-//			
-//		}
-//		
-//		m_list_Finish.SetColumnWidth(0, 70);
-//		int j;
-//		for(j = 1; j <= left_num; j++)
-//		{
-//			m_list_Finish.SetColumnWidth(j, 60);//设置列的宽
-//		}
-//		
-//		for (i = 0; i < 99; i++)
-//		{
-//			//读字段的值
-//			ColumnName.Format("%d", i);
-//			
-//			m_list_Finish.InsertItem(i,0);//插入一行
-//			m_list_Finish.SetItemText(i,0,ColumnName);//其中的Counter为行号；0为列号即字段号
-//			
-//			for(int k = 1; k <= left_num; k++)
-//			{
-//				ColumnName.Format("%.3f", left_re[k-1][i]);
-//				m_list_Finish.SetItemText(i,k,ColumnName);//其中的Counter为行号；0为列号即字段号
-//			}		
-//		}
-//		if(left_re != NULL)
-//		{
-//			for (k=0;k<left_num;k++)
-//			{
-//				delete []left_re[k];
-//				left_re[k] = NULL;
-//			}
-//			delete []left_re;
-//			left_re = NULL;
-//		}
-//		for ( i=0;i<m_LeftCalibration.CoordSeq.GetSize();i++)
-//		{
-//			Image_Coordation*	pIC;
-//			pIC=(Image_Coordation*)m_LeftCalibration.CoordSeq.GetAt(i);
-//			delete pIC;
-//			pIC=NULL;
-//		}
-//		m_LeftCalibration.CoordSeq.RemoveAll();
-//		
-//		return true;
-//	}
-//	return false;
-//}
-///*
-//*函数说明：右相机标定完成函数。
-//*输入参数：无
-//*输出参数: 无
-//*返 回 值：TRUE表示标定成功,FALSE表示失败。
-//*/
-//BOOL CBSVDlg::CalibFinishRightCamera()
-//{
-//	//清除记录右图像特征圆坐标点
-//	Blob_ReleaseLeftBlobSeq();
-//	//清除记录各个图像的标靶坐标
-//	m_RightCalibration.CalibDraw = false;//置绘制右相机标定标志
-//	OnPaint();
-//
-//    int right_num=0;
-//	right_num=m_RightCalibration.CoordSeq.GetSize();
-//	//相机标定参数
-//	CString strCalibrate = "";
-//	double zero(0.0);
-//	double unit(1.0);
-//	double **right_re = NULL;
-//	right_re=new double*[right_num];
-//	int k;
-//	for (k=0;k<right_num;k++)
-//	{
-//		right_re[k]=new double[99];
-//	}
-//	intrinsic_calibration_result rightICR;
-//	
-//	if (!Calibration_RightCamera(&m_RightCalibration.CoordSeq,rightICR,right_re))
-//	{
-//		for (int i=0;i<m_RightCalibration.CoordSeq.GetSize();i++)
-//		{
-//			Image_Coordation*	pIC;
-//			pIC=(Image_Coordation*)m_RightCalibration.CoordSeq.GetAt(i);
-//			delete pIC;
-//			pIC=NULL;
-//		}
-//		m_RightCalibration.CoordSeq.RemoveAll();	
-//		if(right_re != NULL)
-//		{
-//			for (k=0;k<right_num;k++)
-//			{
-//				delete []right_re[k];
-//				right_re[k] = NULL;
-//			}
-//			delete []right_re;
-//			right_re = NULL;
-//		}
-//    	GetDlgItem(IDC_LIST_BVS_ListFinish)->ShowWindow(SW_HIDE);//标定完成数据显示List
-//	    m_static_FinishText.ShowWindow(SW_SHOW);//标定完成提示静态框
-//
-//		m_static_FinishText.SetWindowText(STR_CalibFailText);
-//
-//		return false;
-//	}
-//	else
-//	{
-//		GetDlgItem(IDC_STATIC_ShouDInfor)->ShowWindow(SW_HIDE);
-//		GetDlgItem(IDC_LIST_BVS_ListFinish)->ShowWindow(SW_SHOW);//标定完成数据显示List
-//	    m_static_FinishText.ShowWindow(SW_SHOW);//标定完成提示静态框
-//
-//		
-//		int right_grade;
-//		CString ColumnName;
-//		right_grade=Calibration_ComputeEvaluate(right_re,right_num);
-//		
-//		//显示相机标定参数
-//	
-//
-//		CString s;
-//		s.Format("%s\n%s\nk1=%s, k2=%s\n",STR_RCalibFinishText_1,STR_RCalibFinishText_2,format_fraction(rightICR.k1), format_fraction(rightICR.k2)) ;
-//	//	s.Format("右相机标定结果:\n畸变系数:\nk1=%s, k2=%s\n",format_fraction(rightICR.k1), format_fraction(rightICR.k2)) ;
-//	
-//		strCalibrate += s;
-//		
-//		s.Format("%s\n",STR_RCalibFinishText_3);
-//	//	s = "右相机内参矩阵A:\n";
-//		strCalibrate += s;
-//		
-//		s.Format("%s %s  %s\n%s %s  %s\n%s %s  %s\n",format_fraction(rightICR.fx) , format_fraction(rightICR.skewness), 
-//			format_fraction(rightICR.u0), format_fraction(zero),  format_fraction(rightICR.fy),
-//			format_fraction(rightICR.v0), format_fraction(zero), format_fraction(zero), format_fraction(unit));
-//		strCalibrate += s;
-//		
-//		s.Format("%s%s",STR_RCalibFinishText_4,g_strEvaluate[right_grade]);
-//	//	s = "右相机评估结果:" + strEvaluate[right_grade];
-//		strCalibrate += s;
-//		m_static_FinishText.SetWindowText(strCalibrate);
-//
-//		//清空所有列
-//		while(m_list_Finish.DeleteColumn(0))
-//		{
-//			
-//		}
-//		m_list_Finish.DeleteAllItems();
-//		m_list_Finish.InsertColumn(0, STR_RCalibFinishList_1,LVCFMT_IMAGE|LVCFMT_LEFT);  //插入第1列
-//		
-//		int i;
-//		for (i = 1; i <= right_num; i++)
-//		{
-//			ColumnName.Format("%s%d",STR_RCalibFinishList_2, i);
-//			m_list_Finish.InsertColumn(i, ColumnName);//插入第1列
-//			
-//		}
-//		
-//		m_list_Finish.SetColumnWidth(0, 70);
-//		for(int j = 1; j <= right_num; j++)
-//		{
-//			m_list_Finish.SetColumnWidth(j, 60);//设置列的宽
-//		}
-//		
-//		for (i = 0; i < 99; i++)
-//		{
-//			//读字段的值
-//			ColumnName.Format("%d", i);
-//			
-//			m_list_Finish.InsertItem(i,0);//插入一行
-//			m_list_Finish.SetItemText(i,0,ColumnName);//其中的Counter为行号；0为列号即字段号
-//			int k;
-//			for(k = 1; k <= right_num; k++)
-//			{
-//				ColumnName.Format("%.3f", right_re[k-1][i]);
-//				m_list_Finish.SetItemText(i,k,ColumnName);//其中的Counter为行号；0为列号即字段号
-//			}		
-//		}
-//		if(right_re != NULL)
-//		{
-//			for (k=0;k<right_num;k++)
-//			{
-//				delete []right_re[k];
-//				right_re[k] = NULL;
-//			}
-//			delete []right_re;
-//			right_re = NULL;
-//		}
-//		for ( i=0;i<m_RightCalibration.CoordSeq.GetSize();i++)
-//		{
-//			Image_Coordation*	pIC;
-//			pIC=(Image_Coordation*)m_RightCalibration.CoordSeq.GetAt(i);
-//			delete pIC;
-//			pIC=NULL;
-//		}
-//		m_RightCalibration.CoordSeq.RemoveAll();
-//		return true;
-//	}
-//
-//   return false;
-//}
 
-void CBSVDlg::OnBnClickedCalibration()
+void CBSVDlg::Calibrate(bool isLeft)
 {
-	 //TODO: 在此添加控件通知处理程序代码
-	CString a, b ;
-	a.Format(_T("LCamera_calibdata.txt"));
-	b.Format(_T("LCamera_caliberation_result.txt"));
-	string A((LPCTSTR)a);
-	string B((LPCTSTR)b);
+	string dataPath = isLeft ? "LCamera_calibdata.txt" : "RCamera_calibdata.txt";
+	string resultPath = isLeft ? "LCamera_caliberation_result.txt" : "LCamera_caliberation_result.txt";
 
 	m_Calibration.Initial();
 	CCali_ParaDlg dlg;
 	dlg.DoModal();
-	/*在这一段应该加一段判断语句，如果数据没有输入完全就不执行下面的标定语句*/
-	if(m_Calibration.RowCornerNum==0|m_Calibration.ColumCornerNum==0|m_Calibration.GridWidth==0|m_Calibration.GridHeight==0)
+	//在这一段应该加一段判断语句，如果数据没有输入完全就不执行下面的标定语句
+	if (m_Calibration.RowCornerNum == 0 || m_Calibration.ColumCornerNum == 0 
+		|| m_Calibration.GridWidth == 0 || m_Calibration.GridHeight == 0)
 	{
 		AfxMessageBox(_T("未完整输入参数"));
 	}
 	else
 	{
-		CalibrationLeft(A,B,m_Calibration.RowCornerNum,m_Calibration.ColumCornerNum,m_Calibration.GridWidth,m_Calibration.GridHeight);
+		Calibration(dataPath, resultPath, m_Calibration.RowCornerNum, m_Calibration.ColumCornerNum, m_Calibration.GridWidth, m_Calibration.GridHeight);
 	}
+}
+
+void CBSVDlg::OnBnClickedCalibration()
+{
+	Calibrate(true);
 }
 
 void CBSVDlg::OnBnClickedCalibration2()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	CString a, b ;
-	a.Format(_T("RCamera_calibdata.txt"));
-	b.Format(_T("RCamera_caliberation_result.txt"));
-	string A((LPCTSTR)a);
-	string B((LPCTSTR)b);
-
-	CCali_ParaDlg dlg;
-	dlg.DoModal();
-	CalibrationLeft(A,B,m_Calibration.RowCornerNum,m_Calibration.ColumCornerNum,m_Calibration.GridWidth,m_Calibration.GridHeight);
+	Calibrate(false);
 }
 
 void CBSVDlg::Savepic(Camera &camera, Image &image, bool isLeft)

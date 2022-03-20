@@ -111,10 +111,10 @@ protected:
 	afx_msg void OnBnClickedSetcamera2();
 	afx_msg void OnBnClickedCircledetect();
 	afx_msg void OnBnClickedCircledetect2();
-	afx_msg void OnBnClickedSavepic();
-	afx_msg void OnBnClickedSavepic2();
 	afx_msg void OnBnClickedStopdetect();
 	afx_msg void OnBnClickedStopdetect2();
+	afx_msg void OnBnClickedSavepic();
+	afx_msg void OnBnClickedSavepic2();
 	afx_msg void OnBnClickedCalibration();
 	afx_msg void OnBnClickedCalibration2();
 
@@ -153,6 +153,7 @@ public:
 	void Circledetect(Image &image, UINT_PTR nIDEvent, UINT nElapse, bool timerflag, UINT32 circleDetectId, UINT32 stopDetectId);
 	void Stopdetect(bool timerFlag, UINT_PTR nIDEvent, UINT32 circleDetectId, UINT32 stopDetectId);
 	void Savepic(Camera& camera, Image& image, bool isLeft);
+	void Calibrate(bool isLeft);
 
 public:
 	Camera m_LeftCamera;
