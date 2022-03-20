@@ -125,7 +125,6 @@ protected:
 	afx_msg void OnTimer(UINT_PTR nIDEvent);
 	afx_msg void OnClose();
 
-
 	DECLARE_MESSAGE_MAP()
 
 public:

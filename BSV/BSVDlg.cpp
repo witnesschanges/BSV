@@ -687,7 +687,7 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CBSVDlg::OnBnClickedOpencamera2()
 {
-	//启动右相机	
+	//启动右相机
 	OpenCamera(m_RightCamera, IDC_OpenCamera2, IDC_CapVideo2, IDC_SetCamera2);
 }
 
@@ -703,16 +703,14 @@ void CBSVDlg::OnBnClickedSetcamera2()
 
 void CBSVDlg::OnBnClickedOpen2camera()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	OnBnClickedOpencamera();
-	OnBnClickedOpencamera2();
+	OpenCamera(m_LeftCamera, IDC_OpenCamera, IDC_CapVideo, IDC_SetCamera);
+	OpenCamera(m_RightCamera, IDC_OpenCamera2, IDC_CapVideo2, IDC_SetCamera2);
 }
 
 void CBSVDlg::OnBnClickedCap2video()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	OnBnClickedCapvideo();
-	OnBnClickedCapvideo2();
+	CapVideo(m_LeftCamera, m_LeftImage, IDC_CapVideo, LeftCallbackFunction);
+	CapVideo(m_RightCamera, m_RightImage, IDC_CapVideo2, RightCallbackFunction);
 }
 
 /*
@@ -1013,9 +1011,8 @@ void CBSVDlg::OnBnClickedStopdetect2()
 
 void CBSVDlg::OnBnClickedCircle2detect()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	OnBnClickedCircledetect();
-	OnBnClickedCircledetect2();
+	Circledetect(m_LeftImage, 1, 300, m_TimerFlag, IDC_CircleDetect, IDC_StopDetect);
+	Circledetect(m_RightImage, 2, 300, m_TimerFlag2, IDC_CircleDetect2, IDC_StopDetect2);
 }
 
 CString format_fraction(double data)
@@ -1069,7 +1066,7 @@ void CBSVDlg::Calibrate(bool isLeft)
 	}
 	else
 	{
-		Calibration(dataPath, resultPath, m_Calibration.RowCornerNum, m_Calibration.ColumCornerNum, m_Calibration.GridWidth, m_Calibration.GridHeight);
+		CalibrationCamera(dataPath, resultPath, m_Calibration.RowCornerNum, m_Calibration.ColumCornerNum, m_Calibration.GridWidth, m_Calibration.GridHeight);
 	}
 }
 
