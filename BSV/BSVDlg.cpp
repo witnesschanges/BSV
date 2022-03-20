@@ -191,8 +191,8 @@ void CBSVDlg::OnClose()
 		m_TimerFlag2 = NULL;
 	}
 
-	Blob_ReleaseLeftBlobSeq();
-	Blob_ReleaseRightBlobSeq();
+	Blob_ReleaseBlobSeq(m_LeftCamera.BlobSeq);
+	Blob_ReleaseBlobSeq(m_RightCamera.BlobSeq);
 
 	CDialogEx::OnClose();
 }
@@ -667,7 +667,7 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 			//固定阈值分割图像 lq:二值化图像
 			threshold(RFilImg, RBinImg, 100, 255, CV_THRESH_BINARY);
 			
-			Blob_ReleaseRightBlobSeq();
+			Blob_ReleaseBlobSeq(m_RightCamera.BlobSeq);
 			Detect_RightCircleDetect(RBinImg, 0, 255, 0.6, 0.6);
 			Blob_DenoisingRightArea(1000, 8000);
 
@@ -718,23 +718,12 @@ void CBSVDlg::OnBnClickedCap2video()
 *参数说明
 CPtrArray* BlobSeq	   待释放内存的团块队列。
 */
-/*左相机*/
-void CBSVDlg::Blob_ReleaseLeftBlobSeq()
+void CBSVDlg::Blob_ReleaseBlobSeq(CArray<Blob>& blobSeq)
 {
-	if (!m_LeftCamera.BlobSeq.IsEmpty())
+	if (!blobSeq.IsEmpty())
 	{
-		m_LeftCamera.BlobSeq.RemoveAll();
-		m_LeftCamera.BlobSeq.FreeExtra();
-	}
-}
-
-/*右相机*/
-void CBSVDlg::Blob_ReleaseRightBlobSeq()
-{
-	if (!m_RightCamera.BlobSeq.IsEmpty())
-	{
-		m_RightCamera.BlobSeq.RemoveAll();
-		m_RightCamera.BlobSeq.FreeExtra();
+		blobSeq.RemoveAll();
+		blobSeq.FreeExtra();
 	}
 }
 

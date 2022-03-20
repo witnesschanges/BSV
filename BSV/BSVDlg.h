@@ -128,8 +128,6 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	void Blob_ReleaseLeftBlobSeq();
-	void Blob_ReleaseRightBlobSeq();
 	void Detect_LeftCircleDetect(InputArray SrcImg, double lowthresh, 
 		double highthresh, double AspectRatio, double Circularity);
 	void Detect_RightCircleDetect(InputArray SrcImg, double lowthresh, 
@@ -153,6 +151,8 @@ public:
 	void Stopdetect(bool timerFlag, UINT_PTR nIDEvent, UINT32 circleDetectId, UINT32 stopDetectId);
 	void Savepic(Camera& camera, Image& image, bool isLeft);
 	void Calibrate(bool isLeft);
+
+	void Blob_ReleaseBlobSeq(CArray<Blob>& BlobSeq);
 
 public:
 	Camera m_LeftCamera;
