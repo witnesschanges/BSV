@@ -479,7 +479,6 @@ void CBSVDlg::OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId,
 
 void CBSVDlg::OnBnClickedOpencamera()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	//启动左相机
 	OpenCamera(m_LeftCamera, IDC_OpenCamera, IDC_CapVideo, IDC_SetCamera);
 
@@ -529,32 +528,30 @@ void CBSVDlg::CapVideo(Camera& camera, Image image, UINT32 capVideoId, int (*Cal
 
 			//开始采集图像后，不再接受更新的“连续采集”指令
 			GetDlgItem(capVideoId)->EnableWindow(false);
-			//GetDlgItem(IDC_Btn_SetCamera)->EnableWindow(false);
 		}
 	}
 }
 
 void CBSVDlg::OnBnClickedCapvideo()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	CapVideo(m_LeftCamera, m_LeftImage, IDC_CapVideo, LeftCallbackFunction);
+}
+
+void CBSVDlg::SetCamera(Camera& camera)
+{
+	if (camera.CameraHandle == NULL)
+	{
+		MessageBox("尚未启动相机，无法配置！", "BSV", MB_ICONWARNING);
+	}
+	else
+	{
+		MessageBox("暂无此功能");
+	}
 }
 
 void CBSVDlg::OnBnClickedSetcamera()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	if(m_LeftCamera.CameraHandle == NULL )
-	{
-		MessageBox("尚未启动相机，无法配置！","BSV",MB_ICONWARNING);
-	}
-	else
-	{
-		//SetCameraDlg Dlg;	//新建相机配置对话框
-		//if (Dlg.DoModal())
-		//{
-		//}
-		MessageBox("暂无此功能");
-	}
+	SetCamera(m_LeftCamera);
 }
 
 void CBSVDlg::OnBnClickedCircledetect()
@@ -680,32 +677,18 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 
 void CBSVDlg::OnBnClickedOpencamera2()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	//启动右相机	
 	OpenCamera(m_RightCamera, IDC_OpenCamera2, IDC_CapVideo2, IDC_SetCamera2);
 }
 
 void CBSVDlg::OnBnClickedCapvideo2()
 {
-	// TODO: 在此添加控件通知处理程序代码
 	CapVideo(m_RightCamera, m_RightImage, IDC_CapVideo2, RightCallbackFunction);
 }
 
 void CBSVDlg::OnBnClickedSetcamera2()
 {
-	// TODO: 在此添加控件通知处理程序代码
-	if(m_RightCamera.CameraHandle == NULL )
-	{
-		MessageBox("尚未启动相机，无法配置！","BSV",MB_ICONWARNING);
-	}
-	else
-	{
-		//SetCameraDlg Dlg;	//新建相机配置对话框
-		//if (Dlg.DoModal())
-		//{
-		//}
-		MessageBox("暂无此功能");
-	}
+	SetCamera(m_RightCamera);
 }
 
 void CBSVDlg::OnBnClickedOpen2camera()
