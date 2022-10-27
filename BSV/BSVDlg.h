@@ -20,6 +20,13 @@ const int WaitOutTime = 3000;
 const float pi = 3.141592653;
 const int PictureControlWidth = 520;
 const int PictureControlHight = 390;
+const string LeftCameraCalibdataText = "LCamera_calibdata.txt";
+const string RightCameraCalibdataText = "RCamera_calibdata.txt";
+const string LeftCameraCalibrationResultText = "LCamera_caliberation_result.txt";
+const string RightCameraCalibrationResultText = "RCamera_caliberation_result.txt";
+const UINT_PTR FirstTimerId = 1;
+const UINT_PTR SecondTimerId = 2;
+const UINT CircleDetectTimerElapse = 300;
 
 enum CameraType
 {

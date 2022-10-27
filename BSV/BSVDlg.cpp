@@ -171,13 +171,13 @@ void CBSVDlg::OnClose()
 	//清除定时器
 	if (m_TimerFlag)
 	{
-		KillTimer(1);
+		KillTimer(FirstTimerId);
 		m_TimerFlag = NULL;
 	}
 
 	if (m_TimerFlag2)
 	{
-		KillTimer(2);
+		KillTimer(SecondTimerId);
 		m_TimerFlag2 = NULL;
 	}
 
@@ -530,7 +530,7 @@ void CBSVDlg::Circledetect(Image &image, UINT_PTR nIDEvent, UINT nElapse, bool t
 
 void CBSVDlg::OnBnClickedCircledetect()
 {
-	Circledetect(m_LeftImage, 1, 300, m_TimerFlag, IDC_CircleDetect, IDC_StopDetect);
+	Circledetect(m_LeftImage, FirstTimerId, CircleDetectTimerElapse, m_TimerFlag, IDC_CircleDetect, IDC_StopDetect);
 }
 
 void CBSVDlg::Stopdetect(bool timerFlag, UINT_PTR nIDEvent, UINT32 circleDetectId, UINT32 stopDetectId)
@@ -549,7 +549,7 @@ void CBSVDlg::Stopdetect(bool timerFlag, UINT_PTR nIDEvent, UINT32 circleDetectI
 
 void CBSVDlg::OnBnClickedStopdetect()
 {
-	Stopdetect(m_TimerFlag, 1, IDC_CircleDetect, IDC_StopDetect);
+	Stopdetect(m_TimerFlag, FirstTimerId, IDC_CircleDetect, IDC_StopDetect);
 }
 
 /*
@@ -563,7 +563,7 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
 	switch(nIDEvent)//nIDEvent 为定时器事件ID，1，2，3
 	{
-	case 1:
+	case FirstTimerId:
 		{
 			if( m_LeftCamera.PixelFormat != PixelFormat_Mono8 )
 				return;
@@ -600,7 +600,7 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 			LFilImg.release();
 		}
 		break;
-	case 2:
+	case SecondTimerId:
 		{
 			if( m_RightCamera.PixelFormat != PixelFormat_Mono8 )
 				return;
@@ -819,7 +819,7 @@ void CBSVDlg::ShowCircles(Camera &camera, Image &image, UINT32 picId)
 
 void CBSVDlg::OnBnClickedCircledetect2()
 {
-	Circledetect(m_RightImage, 2, 300, m_TimerFlag2, IDC_CircleDetect2, IDC_StopDetect2);
+	Circledetect(m_RightImage, SecondTimerId, CircleDetectTimerElapse, m_TimerFlag2, IDC_CircleDetect2, IDC_StopDetect2);
 }
 
 void CBSVDlg::OnBnClickedStopdetect2()
@@ -827,7 +827,7 @@ void CBSVDlg::OnBnClickedStopdetect2()
 	// TODO: 在此添加控件通知处理程序代码
 	if (m_TimerFlag2)
 	{
-		KillTimer(2);
+		KillTimer(SecondTimerId);
 		m_TimerFlag2 = false;
 	}
 
@@ -837,8 +837,8 @@ void CBSVDlg::OnBnClickedStopdetect2()
 
 void CBSVDlg::OnBnClickedCircle2detect()
 {
-	Circledetect(m_LeftImage, 1, 300, m_TimerFlag, IDC_CircleDetect, IDC_StopDetect);
-	Circledetect(m_RightImage, 2, 300, m_TimerFlag2, IDC_CircleDetect2, IDC_StopDetect2);
+	Circledetect(m_LeftImage, FirstTimerId, CircleDetectTimerElapse, m_TimerFlag, IDC_CircleDetect, IDC_StopDetect);
+	Circledetect(m_RightImage, SecondTimerId, CircleDetectTimerElapse, m_TimerFlag2, IDC_CircleDetect2, IDC_StopDetect2);
 }
 
 CString format_fraction(double data)
@@ -878,8 +878,8 @@ CString format_fraction(double data)
 
 void CBSVDlg::Calibrate(bool isLeft)
 {
-	string dataPath = isLeft ? "LCamera_calibdata.txt" : "RCamera_calibdata.txt";
-	string resultPath = isLeft ? "LCamera_caliberation_result.txt" : "LCamera_caliberation_result.txt";
+	string dataPath = isLeft ? LeftCameraCalibdataText : RightCameraCalibdataText;
+	string resultPath = isLeft ? LeftCameraCalibrationResultText : RightCameraCalibrationResultText;
 
 	m_Calibration.Initial();
 	CCali_ParaDlg dlg;
