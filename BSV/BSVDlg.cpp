@@ -58,9 +58,6 @@ CBSVDlg::CBSVDlg(CWnd* pParent /*=NULL*/)
 	m_EVDeadIAA(true, TRUE, NULL, NULL)
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
-
-	//左相机变量初始化
-	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 	g_pBSVDlg = this;
 
 	m_LeftCamera.Initial();
