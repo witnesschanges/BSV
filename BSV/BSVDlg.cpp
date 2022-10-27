@@ -135,16 +135,9 @@ BOOL CBSVDlg::OnInitDialog()
 	AllocConsole();
 	freopen("CONOUT$", "a+", stdout);
 
-	//固定Picture Control控件的大小
-	CRect rectL;  
-	GetDlgItem(IDC_LeftPic)->GetWindowRect(&rectL);
-	ScreenToClient(&rectL);
-	GetDlgItem(IDC_LeftPic)->MoveWindow(rectL.left, rectL.top, 520, 390, true);
-
-	CRect rectR;  
-	GetDlgItem(IDC_RightPic)->GetWindowRect(&rectR);
-	ScreenToClient(&rectR);
-	GetDlgItem(IDC_RightPic)->MoveWindow(rectR.left, rectR.top, 520, 390, true);
+	//设置Picture Control控件的大小
+	SetPictureSize(IDC_LeftPic);
+	SetPictureSize(IDC_RightPic);
 
 	GetDlgItem(IDC_CapVideo)->EnableWindow(false);
 	GetDlgItem(IDC_SetCamera)->EnableWindow(false);
@@ -401,6 +394,14 @@ void CBSVDlg::DrawCamera(Camera &camera, Image &image, UINT32 picId)
 
 	GetDlgItem(picId)->ReleaseDC(pdc);
 	camera.Section.Unlock();
+}
+
+void CBSVDlg::SetPictureSize(UINT32 picId)
+{
+	CRect rect;
+	GetDlgItem(picId)->GetWindowRect(&rect);
+	ScreenToClient(&rect);
+	GetDlgItem(picId)->MoveWindow(rect.left, rect.top, PictureControlWidth, PictureControlHight, true);
 }
 
 void CBSVDlg::OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId)

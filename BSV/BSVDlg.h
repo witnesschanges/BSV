@@ -15,8 +15,11 @@
 using namespace std;
 using namespace cv;
 
-#define WaitOutTime 3000
-#define pi 3.141592653
+
+const int WaitOutTime = 3000;
+const float pi = 3.141592653;
+const int PictureControlWidth = 520;
+const int PictureControlHight = 390;
 
 enum CameraType
 {
@@ -143,6 +146,7 @@ public:
 	void DenoisingBlobArea(CArray<Blob> &blob, int minArea, int maxArea);
 	void ShowCircles(Camera& camera, Image& image, UINT32 openCameraId);
 	void DrawCamera(Camera& camera, Image& image, UINT32 picId);
+	void SetPictureSize(UINT32 picId);
 
 public:
 	Camera m_LeftCamera;
