@@ -642,6 +642,44 @@ void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 	CDialogEx::OnTimer(nIDEvent);
 }
 
+void CBSVDlg::RecognizeCircle(Camera camera)
+{
+	if (camera.PixelFormat != PixelFormat_Mono8)
+		return;
+
+	Mat RSrcImg;
+	RSrcImg.create(m_RightImage.OriHeight, m_RightImage.OriWidth, CV_8UC1);
+	g_pBSVDlg->camera.SectionCopy.Lock();
+	memcpy(RSrcImg.data, m_RightImage.ShowDIBBits, m_RightImage.OriWidth * m_RightImage.OriHeight * (m_RightImage.Bit / 8));
+	g_pBSVDlg->camera.SectionCopy.Unlock();
+
+	Mat RFilImg;
+	//双边滤波，保边去噪
+	//bilateralFilter(RSrcImg, RFilImg, 25, 25*2, 25/2);
+	//高斯滤波
+	GaussianBlur(RSrcImg, RFilImg, Size(7, 7), 0, 0);
+
+	Mat RBinImg;
+	//自适应阈值分割图像
+	//adaptiveThreshold(RFilImg, RBinImg, 255, CV_ADAPTIVE_THRESH_MEAN_C,
+	//CV_THRESH_BINARY, 7, 5);
+	//固定阈值分割图像 lq:二值化图像
+	threshold(RFilImg, RBinImg, 100, 255, CV_THRESH_BINARY);
+
+	ReleaseBlobSeq(camera.BlobSeq);
+	DetectCircle(camera, RBinImg, 0, 255, 0.6, 0.6);
+	DenoisingBlobArea(camera.BlobSeq, 1000, 8000);
+
+	if (!camera.BlobSeq.IsEmpty())
+	{
+		ShowCircles(camera, m_RightImage, IDC_RightPic);
+	}
+	RSrcImg.release();
+	RFilImg.release();
+	RBinImg.release();
+}
+}
+
 void CBSVDlg::OnBnClickedOpencamera2()
 {
 	//启动右相机
