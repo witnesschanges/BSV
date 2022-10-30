@@ -152,6 +152,7 @@ public:
 		double highthresh, double aspectRatio, double circularity);
 	void DenoisingBlobArea(CArray<Blob> &blob, int minArea, int maxArea);
 	void ShowCircles(Camera& camera, Image& image, UINT32 openCameraId);
+	void RecognizeCircle(Camera& camera, Image image);
 	void DrawCamera(Camera& camera, Image& image, UINT32 picId);
 	void SetPictureSize(UINT32 picId);
 

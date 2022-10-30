@@ -561,123 +561,59 @@ nIDEvent 定时器标识符。在一个窗体内可以使用多个定时器
 void CBSVDlg::OnTimer(UINT_PTR nIDEvent)
 {
 	// TODO: 在此添加消息处理程序代码和/或调用默认值
-	switch(nIDEvent)//nIDEvent 为定时器事件ID，1，2，3
+	switch(nIDEvent)//nIDEvent 为定时器事件ID，1，2
 	{
-	case FirstTimerId:
+		case FirstTimerId:
 		{
-			if( m_LeftCamera.PixelFormat != PixelFormat_Mono8 )
-				return;
-
-			Mat LSrcImg;
-			LSrcImg.create(m_LeftImage.OriHeight, m_LeftImage.OriWidth, CV_8UC1);
-
-			g_pBSVDlg->m_LeftCamera.SectionCopy.Lock();
-			memcpy(LSrcImg.data,m_LeftImage.ShowDIBBits,m_LeftImage.OriWidth*m_LeftImage.OriHeight*(m_LeftImage.Bit/8));
-			g_pBSVDlg->m_LeftCamera.SectionCopy.Unlock();
-	
-			Mat LFilImg;
-			//双边滤波，保边去噪
-			//bilateralFilter(LSrcImg, LFilImg, 25, 25*2, 25/2);
-			//高斯滤波
-			GaussianBlur(LSrcImg, LFilImg, Size(7,7), 0, 0);
-
-			Mat LBinImg;
-			//自适应阈值分割图像	
-			//adaptiveThreshold(LFilImg, LBinImg, 255, CV_ADAPTIVE_THRESH_MEAN_C, 
-			//CV_THRESH_BINARY, 7, 5);	
-			//固定阈值分割图像 lq:二值化图像
-			threshold(LFilImg, LBinImg, 100, 255, CV_THRESH_BINARY);
-	
-			//Blob_ReleaseLeftBlobSeq();
-			//Detect_LeftCircleDetect(LBinImg, 0, 255, 0.6, 0.6);
-			//Blob_DenoisingLeftArea(1000, 8000);
-			
-			if (!m_LeftCamera.BlobSeq.IsEmpty())
-			{
-				ShowCircles(m_LeftCamera, m_LeftImage, IDC_LeftPic);
-			}
-			LSrcImg.release();
-			LFilImg.release();
+			RecognizeCircle(g_pBSVDlg->m_LeftCamera, m_LeftImage);
+			break;
 		}
-		break;
-	case SecondTimerId:
+		case SecondTimerId:
 		{
-			if( m_RightCamera.PixelFormat != PixelFormat_Mono8 )
-				return;
-
-			Mat RSrcImg;
-			RSrcImg.create(m_RightImage.OriHeight, m_RightImage.OriWidth, CV_8UC1);
-			g_pBSVDlg->m_RightCamera.SectionCopy.Lock();
-			memcpy(RSrcImg.data,m_RightImage.ShowDIBBits,m_RightImage.OriWidth*m_RightImage.OriHeight*(m_RightImage.Bit/8));
-			g_pBSVDlg->m_RightCamera.SectionCopy.Unlock();
-	
-			Mat RFilImg;
-			//双边滤波，保边去噪
-			//bilateralFilter(RSrcImg, RFilImg, 25, 25*2, 25/2);
-			//高斯滤波
-			GaussianBlur(RSrcImg, RFilImg, Size(7,7), 0, 0);
-
-			Mat RBinImg;
-			//自适应阈值分割图像
-			//adaptiveThreshold(RFilImg, RBinImg, 255, CV_ADAPTIVE_THRESH_MEAN_C,
-			//CV_THRESH_BINARY, 7, 5);
-			//固定阈值分割图像 lq:二值化图像
-			threshold(RFilImg, RBinImg, 100, 255, CV_THRESH_BINARY);
-			
-			ReleaseBlobSeq(m_RightCamera.BlobSeq);
-			DetectCircle(m_RightCamera, RBinImg, 0, 255, 0.6, 0.6);
-			DenoisingBlobArea(m_RightCamera.BlobSeq, 1000, 8000);
-
-			if (!m_RightCamera.BlobSeq.IsEmpty())
-			{
-				ShowCircles(m_RightCamera, m_RightImage, IDC_RightPic);
-			}
-			RSrcImg.release();
-			RFilImg.release();
-			RBinImg.release();
+			RecognizeCircle(g_pBSVDlg->m_RightCamera, m_RightImage);
+			break;
 		}
-		break;
 	}
 
 	CDialogEx::OnTimer(nIDEvent);
 }
 
-void CBSVDlg::RecognizeCircle(Camera camera)
+void CBSVDlg::RecognizeCircle(Camera& camera, Image image)
 {
+	//TODO: 去除函数里面所有的魔法数
+	//TODO: 过程式编程编程面向对象编程
 	if (camera.PixelFormat != PixelFormat_Mono8)
 		return;
 
-	Mat RSrcImg;
-	RSrcImg.create(m_RightImage.OriHeight, m_RightImage.OriWidth, CV_8UC1);
-	g_pBSVDlg->camera.SectionCopy.Lock();
-	memcpy(RSrcImg.data, m_RightImage.ShowDIBBits, m_RightImage.OriWidth * m_RightImage.OriHeight * (m_RightImage.Bit / 8));
-	g_pBSVDlg->camera.SectionCopy.Unlock();
+	Mat SrcImg;
+	SrcImg.create(image.OriHeight, image.OriWidth, CV_8UC1);
+	camera.Section.Lock();
+	memcpy(SrcImg.data, image.ShowDIBBits, image.OriWidth * image.OriHeight * (image.Bit / 8));
+	camera.Section.Unlock();
 
-	Mat RFilImg;
+	Mat FilImg;
 	//双边滤波，保边去噪
-	//bilateralFilter(RSrcImg, RFilImg, 25, 25*2, 25/2);
+	//bilateralFilter(SrcImg, FilImg, 25, 25*2, 25/2);
 	//高斯滤波
-	GaussianBlur(RSrcImg, RFilImg, Size(7, 7), 0, 0);
+	GaussianBlur(SrcImg, FilImg, Size(7, 7), 0, 0);
 
-	Mat RBinImg;
+	Mat BinImg;
 	//自适应阈值分割图像
-	//adaptiveThreshold(RFilImg, RBinImg, 255, CV_ADAPTIVE_THRESH_MEAN_C,
-	//CV_THRESH_BINARY, 7, 5);
-	//固定阈值分割图像 lq:二值化图像
-	threshold(RFilImg, RBinImg, 100, 255, CV_THRESH_BINARY);
+	//adaptiveThreshold(FilImg, BinImg, 255, CV_ADAPTIVE_THRESH_MEAN_C, CV_THRESH_BINARY, 7, 5);
+	//固定阈值二值化图像分割图像
+	threshold(FilImg, BinImg, 100, 255, CV_THRESH_BINARY);
 
 	ReleaseBlobSeq(camera.BlobSeq);
-	DetectCircle(camera, RBinImg, 0, 255, 0.6, 0.6);
+	DetectCircle(camera, BinImg, 0, 255, 0.6, 0.6);
 	DenoisingBlobArea(camera.BlobSeq, 1000, 8000);
 
 	if (!camera.BlobSeq.IsEmpty())
 	{
-		ShowCircles(camera, m_RightImage, IDC_RightPic);
+		ShowCircles(camera, image, IDC_RightPic);
 	}
-	RSrcImg.release();
-	RFilImg.release();
-	RBinImg.release();
-}
+	SrcImg.release();
+	FilImg.release();
+	BinImg.release();
 }
 
 void CBSVDlg::OnBnClickedOpencamera2()
