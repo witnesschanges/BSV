@@ -658,8 +658,6 @@ void CBSVDlg::ReleaseBlobSeq(CArray<Blob>& blobSeq)
 	}
 }
 
-
-
 /*
 *函数功能：检测圆形特征
 *参数说明
@@ -820,34 +818,29 @@ CString format_fraction(double data)
 	CString result;     //格式化之后的数据有效位数为6
 	
 	//暂存输入数据并存为整形
-	int tmp;
-	tmp = abs((int)data);
+	int tmp = abs((int)data);
 
 	if (tmp/10000>=1)
 	{
 		result.Format("%.0f", data);
-		return result;
 	}
-	if (tmp/1000>=1)
+	else if (tmp/1000>=1)
 	{
 		result.Format("%.1f", data);
-		return result;
 	}
-	if (tmp/100>=1)
+	else if (tmp/100>=1)
 	{
 		result.Format("%.2f", data);
-		return result;
 	}
-	if (tmp/10>=1)
+	else if (tmp/10>=1)
 	{
 		result.Format("%.3f", data);
-		return result;
 	}
     else
 	{
 		result.Format("%.4f", data);
-		return result;
 	}
+	return result;
 }
 
 void CBSVDlg::Calibrate(bool isLeft)
