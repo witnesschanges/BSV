@@ -91,12 +91,9 @@ BEGIN_MESSAGE_MAP(CBSVDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_StopDetect2, &CBSVDlg::OnBnClickedStopdetect2)
 	ON_BN_CLICKED(IDC_Circle2Detect, &CBSVDlg::OnBnClickedCircle2detect)
 	ON_BN_CLICKED(IDC_Calibration, &CBSVDlg::OnBnClickedCalibration)
-//ON_BN_CLICKED(IDC_BUTTON2, &CBSVDlg::OnBnClickedButton2)
-ON_BN_CLICKED(IDC_SavePic, &CBSVDlg::OnBnClickedSavepic)
-ON_BN_CLICKED(IDC_SavePic2, &CBSVDlg::OnBnClickedSavepic2)
-ON_BN_CLICKED(IDC_Calibration2, &CBSVDlg::OnBnClickedCalibration2)
-//ON_BN_CLICKED(IDC_BUTTON2, &CBSVDlg::OnBnClickedButton2)
-//ON_BN_CLICKED(IDC_BUTTON10, &CBSVDlg::OnBnClickedButton10)
+	ON_BN_CLICKED(IDC_SavePic, &CBSVDlg::OnBnClickedSavepic)
+	ON_BN_CLICKED(IDC_SavePic2, &CBSVDlg::OnBnClickedSavepic2)
+	ON_BN_CLICKED(IDC_Calibration2, &CBSVDlg::OnBnClickedCalibration2)
 END_MESSAGE_MAP()
 
 // CBSVDlg 消息处理程序
@@ -212,20 +209,25 @@ void CBSVDlg::OnPaint()
 		SendMessage(WM_ICONERASEBKGND, reinterpret_cast<WPARAM>(dc.GetSafeHdc()), 0);
 
 		// 使图标在工作区矩形中居中
-		int cxIcon = GetSystemMetrics(SM_CXICON);
-		int cyIcon = GetSystemMetrics(SM_CYICON);
-		CRect rect;
-		GetClientRect(&rect);
-		int x = (rect.Width() - cxIcon + 1) / 2;
-		int y = (rect.Height() - cyIcon + 1) / 2;
-
-		// 绘制图标
-		dc.DrawIcon(x, y, m_hIcon);
+		LocateCursorMiddle(dc);
 	}
 	else
 	{
 		CDialogEx::OnPaint();
 	}
+}
+
+void CBSVDlg::LocateCursorMiddle(CDC& dc)
+{
+	int cxIcon = GetSystemMetrics(SM_CXICON);
+	int cyIcon = GetSystemMetrics(SM_CYICON);
+	
+	CRect rect;
+	GetClientRect(&rect);
+	int x = (rect.Width() - cxIcon + 1) / 2;
+	int y = (rect.Height() - cyIcon + 1) / 2;
+
+	dc.DrawIcon(x, y, m_hIcon);
 }
 
 //当用户拖动最小化窗口时系统调用此函数取得光标
@@ -715,17 +717,11 @@ void CBSVDlg::DetectCircle(Camera &camera, InputArray srcImg, double lowthresh,
 	camera.BlobSeq.FreeExtra();
 }
 
-////*函数功能：定时器2回调函数
-//void CALLBACK CBSVDlg::Timer2(HWND hwnd,UINT uMsg,UINT idEvent,DWORD dwTime )
-//{
-//	
-//}
-
 /*
 *函数功能：清除团块队列中面积不在指定范围内的团块数据
 *参数说明
-CPtrArray* blobSeq     待处理的团块队列
-int minArea, maxArea    指定的团块面积范围
+	CPtrArray* blobSeq     待处理的团块队列
+	int minArea, maxArea    指定的团块面积范围
 */
 void CBSVDlg::DenoisingBlobArea(CArray<Blob> &blob, int minArea, int maxArea)
 {
@@ -753,8 +749,7 @@ void CBSVDlg::ShowCircles(Camera &camera, Image &image, UINT32 picId)
 	GetDlgItem(picId)->GetClientRect(&rc);//获得图像显示区域
 	SetStretchBltMode(pdc->GetSafeHdc(), COLORONCOLOR);//设置模式
 
-	// 创建红色画笔对象
-	CBrush brushRed(RGB(255, 0, 0));
+	CBrush brushRed(RGB(255, 0, 0)); 	// 创建红色画笔对象
 	CBrush* pOldBrush = pdc->SelectObject(&brushRed);
 
 	double dbRateX = (double)rc.Width() / (double)image.OriWidth;
@@ -836,7 +831,7 @@ CString format_fraction(double data)
 	{
 		result.Format("%.3f", data);
 	}
-    else
+	else
 	{
 		result.Format("%.4f", data);
 	}
