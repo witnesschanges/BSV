@@ -60,19 +60,8 @@ void StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size i
 	}
 }
 
-void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+void PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_points_seq)
 {
-	ifstream fin(pic_Path);//存在空白行会报错
-	ofstream fout(cali_Result);
-	Size image_size;
-	Size board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
-	vector<Point2f> image_points_buf;  // 缓存每幅图像上检测到的角点
-	vector<vector<Point2f>> image_points_seq; // 保存检测到的所有角点
-	int image_count = 0;  //图像数量
-
-	StartRecoginzeCorner(fin, fout, image_count, image_size, board_size, image_points_seq);
-	
-	/*打印角点坐标*/
 	int CornerNum = board_size.width * board_size.height;  //每张图片上总的角点数
 	int total = image_points_seq.size();
 	for (int ii = 0; ii < total; ii++)
@@ -104,9 +93,23 @@ void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, 
 	//	cout<<" -->"<<image_points_seq[ii][jj].y<<"\t";
 	//	cout<<endl;
 	//}
-//}
+}
 
-//以下是摄像机标定
+void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+{
+	ifstream fin(pic_Path);//存在空白行会报错
+	ofstream fout(cali_Result);
+	Size image_size;
+	Size board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
+	vector<Point2f> image_points_buf;  // 缓存每幅图像上检测到的角点
+	vector<vector<Point2f>> image_points_seq; // 保存检测到的所有角点
+	int image_count = 0;  //图像数量
+
+	StartRecoginzeCorner(fin, fout, image_count, image_size, board_size, image_points_seq);
+
+	PrintCornerCoordinates(board_size, image_points_seq);
+
+	//以下是摄像机标定
 	cout << "\n***开始标定***" << endl;
 	/*棋盘三维信息*/
 	Size square_size = Size(grid_width, grid_height);  // 实际测量得到的标定板上每个棋盘格的大小
