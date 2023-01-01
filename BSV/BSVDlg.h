@@ -155,6 +155,7 @@ public:
 	void RecognizeCircle(Camera& camera, Image image);
 	void DrawCamera(Camera& camera, Image& image, UINT32 picId);
 	void SetPictureSize(UINT32 picId);
+	void LocateCursorMiddle(CDC& dc);
 
 public:
 	Camera m_LeftCamera;
