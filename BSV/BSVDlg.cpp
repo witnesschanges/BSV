@@ -11,7 +11,7 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 #include "opencv2/highgui/highgui.hpp"
-#include "externFunc.h"
+#include "CalibrateCamera.h"
 #include "Cali_ParaDlg.h"
 
 #ifdef _DEBUG

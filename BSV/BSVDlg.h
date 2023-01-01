@@ -138,7 +138,7 @@ protected:
 	DECLARE_MESSAGE_MAP()
 
 public:
-	//todo£ºbusiness logic seperate from prentation logic
+	//todo£ºbusiness logic seperate from prensentation logic
 	void OpenCamera(Camera &camera, UINT32 openCameraId, UINT32 capVideoId, UINT32 setCameraId);
 	void CapVideo(Camera &camera, Image &image, UINT32 capVideoId, int (*StreamCB)(MV_IMAGE_INFO*, long nUserVal));
 	void SetCamera(Camera& camera);
