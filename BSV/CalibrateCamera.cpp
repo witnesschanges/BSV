@@ -11,21 +11,21 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "CalibrateCamera.h"
 
-using namespace std;
-using namespace cv;
-
-void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+void DrawCorners(Mat imageInput, Size board_size, vector<Point2f> image_points_buf, bool patternWasFound, string banner)
 {
-	ifstream fin(pic_Path);//存在空白行会报错
-	ofstream fout(cali_Result);
-	Size image_size;
-	Size board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
-	vector<Point2f> image_points_buf;  // 缓存每幅图像上检测到的角点
-	vector<vector<Point2f>> image_points_seq; // 保存检测到的所有角点
+	drawChessboardCorners(imageInput, board_size, image_points_buf, patternWasFound); //用于在图片中标记角点
+	namedWindow(banner, WINDOW_NORMAL);
+	imshow(banner, imageInput);//显示图片
+	waitKey(500);
+}
+
+void StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size image_size, Size board_size, vector<vector<Point2f>> image_points_seq)
+{
 	string filename;
-	int image_count = 0;  //图像数量
-	int success_count = 0;	//识别成功图像数量
-	cout << "***开始识别角点***" << endl;
+	int success_count;
+	vector<Point2f> image_points_buf; //缓存每幅图像上检测到的角点
+	string banner = "相机标定";
+	cout << "*** 开始识别角点 ***" << endl;
 	while (getline(fin, filename))
 	{
 		Mat imageInput = imread(filename);
@@ -36,34 +36,20 @@ void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, 
 			cout << "图片宽度为：" << image_size.width << endl;
 			cout << "图片高度为：" << image_size.height << endl;
 		}
-		int a = findChessboardCorners(imageInput, board_size, image_points_buf,
-			CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_NORMALIZE_IMAGE);
-		if (a == 0)
+		bool isSuccess = findChessboardCorners(imageInput, board_size, image_points_buf, CALIB_CB_ADAPTIVE_THRESH | CALIB_CB_NORMALIZE_IMAGE);
+		if (!isSuccess)
 		{
-			cout << "第" << image_count + 1 << "张图片角点识别失败！" << endl;
-			image_count++;
-			drawChessboardCorners(imageInput, board_size, image_points_buf, false); //用于在图片中标记角点
-			namedWindow("相机标定", WINDOW_NORMAL);
-			imshow("相机标定", imageInput);//显示图片
-			waitKey(500);
+			cout << "第" << image_count << "张图片角点识别失败！" << endl;
+			DrawCorners(imageInput, board_size, image_points_buf, false, banner);
 		}
 		else
 		{
-			cout << "第" << image_count + 1 << "张图片角点识别成功！" << endl;
-			image_count++;
+			cout << "第" << image_count << "张图片角点识别成功！" << endl;
 			success_count++;
 			image_points_seq.push_back(image_points_buf);
-			/* 在图像上显示角点位置 */
-			drawChessboardCorners(imageInput, board_size, image_points_buf, true); //用于在图片中标记角点
-			namedWindow("相机标定", WINDOW_NORMAL);
-			imshow("相机标定", imageInput);//显示图片
-			/*lq:不知道是干什么用的*/
-			/*if (image_count == 1)
-			{
-				imwrite("lq：一张图片的路径",imageInput);
-			}*/
-			waitKey(500);//暂停0.5S	
+			DrawCorners(imageInput, board_size, image_points_buf, true, banner);
 		}
+		image_count++;
 	}
 	if (success_count < image_count)
 	{
@@ -72,6 +58,20 @@ void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, 
 		waitKey(3000);
 		exit(1);
 	}
+}
+
+void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+{
+	ifstream fin(pic_Path);//存在空白行会报错
+	ofstream fout(cali_Result);
+	Size image_size;
+	Size board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
+	vector<Point2f> image_points_buf;  // 缓存每幅图像上检测到的角点
+	vector<vector<Point2f>> image_points_seq; // 保存检测到的所有角点
+	int image_count = 0;  //图像数量
+
+	StartRecoginzeCorner(fin, fout, image_count, image_size, board_size, image_points_seq);
+	
 	/*打印角点坐标*/
 	int CornerNum = board_size.width * board_size.height;  //每张图片上总的角点数
 	int total = image_points_seq.size();

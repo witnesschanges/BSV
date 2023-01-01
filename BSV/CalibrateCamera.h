@@ -1,3 +1,6 @@
+using namespace std;
+using namespace cv;
+
 /*
 *函数说明：完成左相机标定
 *输入参数：
@@ -12,3 +15,7 @@ grid_height:实际测量得到的标定板上每个棋盘格的宽
 */
 void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num,
 	int column_corner_num, double grid_width, double grid_height);
+
+void DrawCorners(Mat imageInput, Size board_size, vector<Point2f> image_points_buf, bool patternWasFound, string banner);
+
+void StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size image_size, Size board_size, vector<vector<Point2f>> image_points_seq);
