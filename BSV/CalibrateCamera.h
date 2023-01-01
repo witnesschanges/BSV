@@ -19,3 +19,9 @@ void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num,
 void DrawCorners(Mat imageInput, Size board_size, vector<Point2f> image_points_buf, bool patternWasFound, string banner);
 
 void StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size image_size, Size board_size, vector<vector<Point2f>> image_points_seq);
+
+void PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_points_seq);
+
+vector<vector<Point3f>> InitialCornerCorodinates(int image_count, Size board_size, Size square_size);
+
+vector<int> InitialCornerCounts(int image_count, Size board_size);

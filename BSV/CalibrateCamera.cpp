@@ -25,7 +25,6 @@ void StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size i
 	int success_count;
 	vector<Point2f> image_points_buf; //缓存每幅图像上检测到的角点
 	string banner = "相机标定";
-	cout << "*** 开始识别角点 ***" << endl;
 	while (getline(fin, filename))
 	{
 		Mat imageInput = imread(filename);
@@ -95,32 +94,9 @@ void PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_point
 	//}
 }
 
-void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+vector<vector<Point3f>> InitialCornerCorodinates(int image_count, Size board_size, Size square_size)
 {
-	ifstream fin(pic_Path);//存在空白行会报错
-	ofstream fout(cali_Result);
-	Size image_size;
-	Size board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
-	vector<Point2f> image_points_buf;  // 缓存每幅图像上检测到的角点
-	vector<vector<Point2f>> image_points_seq; // 保存检测到的所有角点
-	int image_count = 0;  //图像数量
-
-	StartRecoginzeCorner(fin, fout, image_count, image_size, board_size, image_points_seq);
-
-	PrintCornerCoordinates(board_size, image_points_seq);
-
-	//以下是摄像机标定
-	cout << "\n***开始标定***" << endl;
-	/*棋盘三维信息*/
-	Size square_size = Size(grid_width, grid_height);  // 实际测量得到的标定板上每个棋盘格的大小
-	vector<vector<Point3f>> object_points; // 保存标定板上角点的三维坐标
-	/*内外参数*/
-	Mat cameraMatrix = Mat(3, 3, CV_32FC1, Scalar::all(0)); // 摄像机内参数矩阵
-	vector<int> point_counts;  // 每幅图像中角点的数量
-	Mat distCoeffs = Mat(1, 5, CV_32FC1, Scalar::all(0)); // 摄像机的5个畸变系数：k1,k2,p1,p2,k3
-	vector<Mat> tvecsMat;  // 每幅图像的旋转向量
-	vector<Mat> rvecsMat; // 每幅图像的平移向量
-	/* 初始化标定板上角点的三维坐标 */
+	vector<vector<Point3f>> object_points;
 	int i, j, t;
 	for (t = 0; t < image_count; t++)
 	{
@@ -139,10 +115,45 @@ void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, 
 		}
 		object_points.push_back(tempPointSet);
 	}
-	for (i = 0; i < image_count; i++)
+	return object_points;
+}
+
+vector<int> InitialCornerCounts(int image_count, Size board_size)
+{
+	vector<int> point_counts;
+	for (int i = 0; i < image_count; i++)
 	{
 		point_counts.push_back(board_size.width * board_size.height);
 	}
+	return point_counts;
+}
+
+void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+{
+	ifstream fin(pic_Path);//存在空白行会报错
+	ofstream fout(cali_Result);
+	Size image_size;
+	Size board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
+	vector<Point2f> image_points_buf;  // 缓存每幅图像上检测到的角点
+	vector<vector<Point2f>> image_points_seq; // 保存检测到的所有角点
+	int image_count = 0;  //图像数量
+
+	cout << "*** 开始识别角点 ***" << endl;
+	StartRecoginzeCorner(fin, fout, image_count, image_size, board_size, image_points_seq);
+
+	PrintCornerCoordinates(board_size, image_points_seq);
+
+	//以下是摄像机标定
+	cout << "\n***开始标定***" << endl;
+	vector<vector<Point3f>> object_points = InitialCornerCorodinates(image_count, board_size, Size(grid_width, grid_height)); // 每幅图像中角点的三维坐标
+	vector<int> point_counts = InitialCornerCounts(image_count, board_size);// 每幅图像中角点的数量
+
+	/*内外参数*/
+	Mat cameraMatrix = Mat(3, 3, CV_32FC1, Scalar::all(0)); // 摄像机内参数矩阵
+	Mat distCoeffs = Mat(1, 5, CV_32FC1, Scalar::all(0)); // 摄像机的5个畸变系数：k1,k2,p1,p2,k3
+	vector<Mat> tvecsMat;  // 每幅图像的旋转向量
+	vector<Mat> rvecsMat; // 每幅图像的平移向量
+	
 	/* 开始标定 */
 	calibrateCamera(object_points, image_points_seq, image_size, cameraMatrix, distCoeffs, rvecsMat, tvecsMat, 0);
 	cout << "标定完成！" << endl;
@@ -153,7 +164,7 @@ void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, 
 	vector<Point2f> image_points2; // 保存重新计算得到的投影点
 	cout << "->每幅图像的标定误差：\n";
 	fout << "->每幅图像的标定误差：\n";
-	for (i = 0; i < image_count; i++)
+	for (int i = 0; i < image_count; i++)
 	{
 		vector<Point3f> tempPointSet = object_points[i];
 		/* 通过得到的摄像机内外参数，对空间的三维点进行重新投影计算，得到新的投影点 */
