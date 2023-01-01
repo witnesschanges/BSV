@@ -18,8 +18,94 @@
 #define new DEBUG_NEW
 #endif
 
+//TODO: these code blocks that is not belonged to BSVDlg class should be moved into a dedicated file.
 CBSVDlg* g_pBSVDlg = NULL;
 CBSVDlg* g_pBSVThread = NULL;
+
+void MVGrabInternal(Camera& camera, Image& image, MV_IMAGE_INFO* pInfo)
+{
+	//拷贝图像内存
+	camera.SectionCopy.Lock();
+
+	//为原始图像赋值，如果是24位RGB格式，则直接转换
+	if (camera.PixelFormat == PixelFormat_Mono8)
+	{
+		memcpy(image.OriDIBBits, pInfo->pImageBuffer,
+			image.OriWidth * image.OriHeight);
+	}
+	else
+	{
+		int count = (((image.OriWidth * image.Bit) + 31) / 32) * 4;
+		MVBayerToBGR(camera.CameraHandle, pInfo->pImageBuffer, image.OriDIBBits, count,
+			image.OriWidth, image.OriHeight, camera.PixelFormat);
+	}
+
+	LPSTR itemBits;
+	itemBits = new char[image.OriWidth * image.OriHeight * (image.Bit / 8)];
+	memcpy(itemBits, image.OriDIBBits, image.OriWidth * image.OriHeight * (image.Bit / 8));
+	for (int i = 0; i < image.OriHeight; i++)
+	{
+		for (int j = 0; j < image.OriWidth; j++)
+		{
+			if (image.Bit == 8)
+			{
+				image.ShowDIBBits[i * image.OriWidth + j] =
+					itemBits[(image.OriHeight - i - 1) * image.OriWidth + j];
+			}
+			else if (image.Bit == 24)
+			{
+				image.ShowDIBBits[(i * image.OriWidth + j) * 3] =
+					itemBits[((image.OriHeight - i - 1) * image.OriWidth + j) * 3];
+				image.ShowDIBBits[(i * image.OriWidth + j) * 3 + 1] =
+					itemBits[((image.OriHeight - i - 1) * image.OriWidth + j) * 3 + 1];
+				image.ShowDIBBits[(i * image.OriWidth + j) * 3 + 2] =
+					itemBits[((image.OriHeight - i - 1) * image.OriWidth + j) * 3 + 2];
+			}
+		}
+	}
+	delete[]itemBits;
+	camera.SectionCopy.Unlock();
+
+	image.BufHandle = true;//左图像可以进行处理标识
+}
+
+/*
+ *函数说明：相机回调函数,在相机工作在连续与触发模式下时，每获得一帧图像就会调用该函数说明。
+ *输入参数：无
+ *
+*/
+int LeftCallbackFunction(MV_IMAGE_INFO* pInfo, long nUserVal)
+{
+	Camera& leftCamera = g_pBSVDlg->m_LeftCamera;
+	Image& leftImage = g_pBSVDlg->m_LeftImage;
+
+	if (leftImage.OriDIBBits != NULL)
+	{
+		MVGrabInternal(leftCamera, leftImage, pInfo);
+		g_pBSVDlg->DrawCamera(leftCamera, leftImage, IDC_LeftPic);
+	}
+
+	return 1;
+}
+
+/*
+ *函数说明：相机回调函数,在相机工作在连续与触发模式下时，每获得一帧图像就会调用该函数说明。
+ *输入参数：无
+ *
+*/
+int RightCallbackFunction(MV_IMAGE_INFO* pInfo, long nUserVal)
+{
+	Camera& rightCamera = g_pBSVDlg->m_RightCamera;
+	Image& rightImage = g_pBSVDlg->m_RightImage;
+
+	if (rightImage.OriDIBBits != NULL)
+	{
+		MVGrabInternal(rightCamera, rightImage, pInfo);
+		g_pBSVDlg->DrawCamera(rightCamera, rightImage, IDC_RightPic);
+	}
+
+	return 1;
+}
 
 // 用于应用程序“关于”菜单项的 CAboutDlg 对话框
 
@@ -235,91 +321,6 @@ void CBSVDlg::LocateCursorMiddle(CDC& dc)
 HCURSOR CBSVDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
-}
-
-void MVGrabInternal(Camera& camera, Image& image, MV_IMAGE_INFO* pInfo)
-{
-	//拷贝图像内存
-	camera.SectionCopy.Lock();
-
-	//为原始图像赋值，如果是24位RGB格式，则直接转换
-	if (camera.PixelFormat == PixelFormat_Mono8)
-	{
-		memcpy(image.OriDIBBits, pInfo->pImageBuffer,
-			image.OriWidth * image.OriHeight);
-	}
-	else
-	{
-		int count = (((image.OriWidth * image.Bit) + 31) / 32) * 4;
-		MVBayerToBGR(camera.CameraHandle, pInfo->pImageBuffer, image.OriDIBBits, count,
-			image.OriWidth, image.OriHeight, camera.PixelFormat);
-	}
-
-	LPSTR itemBits;
-	itemBits = new char[image.OriWidth * image.OriHeight * (image.Bit / 8)];
-	memcpy(itemBits, image.OriDIBBits, image.OriWidth * image.OriHeight * (image.Bit / 8));
-	for (int i = 0; i < image.OriHeight; i++)
-	{
-		for (int j = 0; j < image.OriWidth; j++)
-		{
-			if (image.Bit == 8)
-			{
-				image.ShowDIBBits[i * image.OriWidth + j] =
-					itemBits[(image.OriHeight - i - 1) * image.OriWidth + j];
-			}
-			else if (image.Bit == 24)
-			{
-				image.ShowDIBBits[(i * image.OriWidth + j) * 3] =
-					itemBits[((image.OriHeight - i - 1) * image.OriWidth + j) * 3];
-				image.ShowDIBBits[(i * image.OriWidth + j) * 3 + 1] =
-					itemBits[((image.OriHeight - i - 1) * image.OriWidth + j) * 3 + 1];
-				image.ShowDIBBits[(i * image.OriWidth + j) * 3 + 2] =
-					itemBits[((image.OriHeight - i - 1) * image.OriWidth + j) * 3 + 2];
-			}
-		}
-	}
-	delete[]itemBits;
-	camera.SectionCopy.Unlock();
-
-	image.BufHandle = true;//左图像可以进行处理标识
-}
-
-/*
- *函数说明：相机回调函数,在相机工作在连续与触发模式下时，每获得一帧图像就会调用该函数说明。
- *输入参数：无
- *
-*/
-int LeftCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
-{
-	Camera& leftCamera = g_pBSVDlg->m_LeftCamera;
-	Image& leftImage = g_pBSVDlg->m_LeftImage;
-
-	if (leftImage.OriDIBBits != NULL)
-	{
-		MVGrabInternal(leftCamera, leftImage, pInfo);
-		g_pBSVDlg->DrawCamera(leftCamera, leftImage, IDC_LeftPic);
-	}
-
-	return 1;
-}
-
-/*
- *函数说明：相机回调函数,在相机工作在连续与触发模式下时，每获得一帧图像就会调用该函数说明。
- *输入参数：无
- *
-*/
-int RightCallbackFunction(MV_IMAGE_INFO *pInfo,long nUserVal)
-{
-	Camera& rightCamera = g_pBSVDlg->m_RightCamera;
-	Image& rightImage = g_pBSVDlg->m_RightImage;
-
-	if (rightImage.OriDIBBits != NULL)
-	{
-		MVGrabInternal(rightCamera, rightImage, pInfo);
-		g_pBSVDlg->DrawCamera(rightCamera, rightImage, IDC_RightPic);
-	}
-
-	return 1;
 }
 
 /*
