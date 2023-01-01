@@ -67,14 +67,14 @@ void PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_point
 	for (int ii = 0; ii < total; ii++)
 	{
 		/*用于输出每张图片检测到第一个角点的坐标*/
-		if (0 == ii % CornerNum)	//CornerNum是每幅图片的角点个数。此判断语句是为了输出图片号，便于控制台观看 
+		if (0 == ii % CornerNum) //CornerNum是每幅图片的角点个数。此判断语句是为了输出图片号，便于控制台观看 
 		{
 			int i = -1;
 			i = ii / CornerNum;
 			int j = i + 1;
 			cout << "--> 第 " << j << "图片的数据 --> : " << endl;
 		}
-		if (0 == ii % 3)	// 此判断语句，格式化输出，便于控制台查看
+		else if (0 == ii % 3)// 此判断语句，格式化输出，便于控制台查看
 		{
 			cout << endl;
 		}
