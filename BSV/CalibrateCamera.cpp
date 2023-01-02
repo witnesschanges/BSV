@@ -23,14 +23,24 @@ CameraCalibration::CameraCalibration(string pic_Path, string cali_Result, int ro
 	m_cameraMatrix = Mat(3, 3, CV_32FC1, Scalar::all(0));
 	m_distCoeffs = Mat(1, 5, CV_32FC1, Scalar::all(0));
 
+	m_rotation_matrix = Mat(3, 3, CV_32FC1, Scalar::all(0));
+
+	m_object_points = InitialCornerCorodinates();
+	m_point_counts = InitialCornerCounts();
+
 }
 
 void CameraCalibration::DrawCorners(Mat imageInput, bool patternWasFound, string banner)
 {
 	drawChessboardCorners(imageInput, m_board_size, m_image_points_buf, patternWasFound); //用于在图片中标记角点
+	ShowImageWindow(banner, imageInput);
+	waitKey(500);
+}
+
+void CameraCalibration::ShowImageWindow(string banner, Mat imageInput)
+{
 	namedWindow(banner, WINDOW_NORMAL);
 	imshow(banner, imageInput);//显示图片
-	waitKey(500);
 }
 
 void CameraCalibration::StartRecoginzeCorner()
@@ -141,7 +151,7 @@ vector<int> CameraCalibration::InitialCornerCounts()
 	return point_counts;
 }
 
-void CameraCalibration::EvaluateCalibrationResults(vector<int> point_counts, vector<vector<Point3f>> object_points)
+void CameraCalibration::EvaluateCalibrationResults()
 {
 	double total_err = 0.0; // 所有图像的平均误差的总和
 	double err = 0.0; // 每幅图像的平均误差
@@ -149,7 +159,7 @@ void CameraCalibration::EvaluateCalibrationResults(vector<int> point_counts, vec
 
 	for (int i = 0; i < m_image_count; i++)
 	{
-		vector<Point3f> tempPointSet = object_points[i];
+		vector<Point3f> tempPointSet = m_object_points[i];
 		/* 通过得到的摄像机内外参数，对空间的三维点进行重新投影计算，得到新的投影点 */
 		projectPoints(tempPointSet, m_rvecsMat[i], m_tvecsMat[i], m_cameraMatrix, m_distCoeffs, image_points2);
 		/* 计算新的投影点和旧的投影点之间的误差*/
@@ -163,7 +173,7 @@ void CameraCalibration::EvaluateCalibrationResults(vector<int> point_counts, vec
 		}
 		err = norm(image_points2Mat, tempImagePointMat, NORM_L2);
 		//norm函数其实把两个通道分别分开来计算的(X1-X2)^2的值，然后统一求和，最后进行根号
-		total_err += err /= point_counts[i];
+		total_err += err /= m_point_counts[i];
 		std::cout << "第" << i + 1 << "幅图像的平均误差：" << err << "像素" << endl;
 		m_fout << "第" << i + 1 << "幅图像的平均误差：" << err << "像素" << endl;
 	}
@@ -173,32 +183,6 @@ void CameraCalibration::EvaluateCalibrationResults(vector<int> point_counts, vec
 
 void CameraCalibration::SaveCalibrationResults()
 {
-
-}
-
-void CameraCalibration::CalibrateCamera()
-{
-	cout << "*** 开始识别角点 ***" << endl;
-	StartRecoginzeCorner();
-
-	PrintCornerCoordinates();
-
-	//以下是摄像机标定
-	cout << "\n*** 开始标定 ***" << endl;
-	vector<vector<Point3f>> object_points = InitialCornerCorodinates(); // 每幅图像中角点的三维坐标
-	vector<int> point_counts = InitialCornerCounts();// 每幅图像中角点的数量
-	/*内外参数*/
-	calibrateCamera(object_points, m_image_points_seq, m_image_size, m_cameraMatrix, m_distCoeffs, m_rvecsMat, m_tvecsMat, 0);
-	cout << "标定完成！" << endl;
-
-	//对标定结果进行评价
-	cout << "*** 开始评价标定结果 ***\n";
-	EvaluateCalibrationResults(point_counts, object_points);
-	std::cout << "*** 评价完成！***" << endl;
-
-	//保存标定结果  	
-	std::cout << "*** 开始保存标定结果 ***" << endl;
-	Mat rotation_matrix = Mat(3, 3, CV_32FC1, Scalar::all(0)); // 保存每幅图像的旋转矩阵
 	m_fout << "相机内参数矩阵：" << endl;
 	m_fout << m_cameraMatrix << endl << endl;
 	m_fout << "畸变系数：\n";
@@ -208,19 +192,19 @@ void CameraCalibration::CalibrateCamera()
 		m_fout << "第" << i + 1 << "幅图像的旋转向量：" << endl;
 		m_fout << m_tvecsMat[i] << endl;
 		/* 将旋转向量转换为相对应的旋转矩阵 */
-		Rodrigues(m_tvecsMat[i], rotation_matrix);
+		Rodrigues(m_tvecsMat[i], m_rotation_matrix);
 		m_fout << "第" << i + 1 << "幅图像的旋转矩阵：" << endl;
-		m_fout << rotation_matrix << endl;
+		m_fout << m_rotation_matrix << endl;
 		m_fout << "第" << i + 1 << "幅图像的平移向量：" << endl;
 		m_fout << m_rvecsMat[i] << endl << endl;
 	}
-	std::cout << "***完成保存***" << endl;
-	m_fout << endl;
-	/* 显示标定结果  */
+}
+
+void CameraCalibration::StoreAndDisplayCalibrationResults()
+{
 	Mat mapx = Mat(m_image_size, CV_32FC1);
 	Mat mapy = Mat(m_image_size, CV_32FC1);
 	Mat R = Mat::eye(3, 3, CV_32F);
-	std::cout << "***保存矫正图像***" << endl;
 	string imageFileName;
 	std::stringstream StrStm;
 	for (int i = 0; i != m_image_count; i++)
@@ -239,10 +223,8 @@ void CameraCalibration::CalibrateCamera()
 		//另一种不需要转换矩阵的方式
 		//undistort(imageSource,newimage,m_cameraMatrix,m_distCoeffs);
 		remap(imageSource, newimage, mapx, mapy, INTER_LINEAR);
-		namedWindow("原始图像", WINDOW_NORMAL);//将显示图像可放大缩小
-		imshow("原始图像", imageSource);
-		namedWindow("矫正后图像", WINDOW_NORMAL);
-		imshow("矫正后图像", newimage);
+		ShowImageWindow("原始图像", imageSource);
+		ShowImageWindow("矫正后图像", newimage);
 		waitKey();		//用户按键触发;如果用户没有按下键,则接续等待
 		StrStm.clear();
 		filePath.clear();
@@ -252,6 +234,29 @@ void CameraCalibration::CalibrateCamera()
 		string SavefilePath = "Save_LImage\\" + imageFileName;	//保存图像路径
 		imwrite(SavefilePath, newimage);
 	}
+}
+
+void CameraCalibration::CalibrateCamera()
+{
+	cout << "*** 开始识别角点 ***" << endl;
+	StartRecoginzeCorner();
+
+	PrintCornerCoordinates();
+
+	cout << "\n*** 开始标定 ***" << endl;
+	calibrateCamera(m_object_points, m_image_points_seq, m_image_size, m_cameraMatrix, m_distCoeffs, m_rvecsMat, m_tvecsMat, 0);
+	cout << "标定完成！" << endl;
+
+	cout << "*** 开始评价标定结果 ***\n";
+	EvaluateCalibrationResults();
+	std::cout << "*** 评价完成！***" << endl;
+
+	std::cout << "*** 开始保存标定结果 ***" << endl;
+	SaveCalibrationResults();
+	m_fout << endl;
+	std::cout << "***完成保存***" << endl;
+
+	std::cout << "*** 保存矫正图像 ***" << endl;
+	StoreAndDisplayCalibrationResults();
 	std::cout << "*** 保存结束 ***" << endl;
-	return;
 }

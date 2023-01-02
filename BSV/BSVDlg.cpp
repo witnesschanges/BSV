@@ -820,7 +820,8 @@ void CBSVDlg::Calibrate(bool isLeft)
 	}
 	else
 	{
-		CalibrationCamera(dataPath, resultPath, m_Calibration.RowCornerNum, m_Calibration.ColumCornerNum, m_Calibration.GridWidth, m_Calibration.GridHeight);
+		CameraCalibration* cameraCalibration = new CameraCalibration(dataPath, resultPath, m_Calibration.RowCornerNum, m_Calibration.ColumCornerNum, m_Calibration.GridWidth, m_Calibration.GridHeight);
+		cameraCalibration->CalibrateCamera();
 	}
 }
 

@@ -22,6 +22,8 @@ public:
 
 	void DrawCorners(Mat imageInput, bool patternWasFound, string banner);
 
+	void ShowImageWindow(string banner, Mat imageInput);
+
 	void StartRecoginzeCorner();
 
 	void PrintCornerCoordinates();
@@ -30,9 +32,11 @@ public:
 
 	vector<int> InitialCornerCounts();
 
-	void EvaluateCalibrationResults(vector<int> point_counts, vector<vector<Point3f>> object_points);
+	void EvaluateCalibrationResults();
 
 	void SaveCalibrationResults();
+
+	void StoreAndDisplayCalibrationResults();
 
 public:
 	string m_pic_Path;
@@ -49,6 +53,11 @@ public:
 	Mat m_distCoeffs;// 摄像机的5个畸变系数：k1, k2, p1, p2, k3
 	vector<Mat> m_tvecsMat;// 每幅图像的旋转向量
 	vector<Mat> m_rvecsMat;// 每幅图像的平移向量
+
+	vector<vector<Point3f>> m_object_points; // 每幅图像中角点的三维坐标
+	vector<int> m_point_counts;// 每幅图像中角点的数量
+
+	Mat m_rotation_matrix;// 保存每幅图像的旋转矩阵
 
 	ifstream& m_fin;//存在空白行会报错
 	ofstream& m_fout;
