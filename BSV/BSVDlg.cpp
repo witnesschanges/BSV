@@ -874,11 +874,3 @@ void CBSVDlg::OnBnClickedSavepic2()
 {
 	Savepic(m_RightCamera, m_RightImage, true);
 }
-
-void Calibration::Initial()
-{
-	RowCornerNum = 0;
-	ColumCornerNum = 0;
-	GridWidth = 0;
-	GridHeight = 0;
-}

@@ -18,7 +18,9 @@ public:
 	*/
 	CameraCalibration(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height);
 
-	void CalibrateCamera();
+	vector<vector<Point3f>> InitialCornerCorodinates();
+
+	vector<int> InitialCornerCounts();
 
 	void DrawCorners(Mat imageInput, bool patternWasFound, string banner);
 
@@ -28,15 +30,13 @@ public:
 
 	void PrintCornerCoordinates();
 
-	vector<vector<Point3f>> InitialCornerCorodinates();
-
-	vector<int> InitialCornerCounts();
-
 	void EvaluateCalibrationResults();
 
 	void SaveCalibrationResults();
 
 	void StoreAndDisplayCalibrationResults();
+
+	void CalibrateCamera();
 
 public:
 	string m_pic_Path;
@@ -54,7 +54,7 @@ public:
 	vector<Mat> m_tvecsMat;// 每幅图像的旋转向量
 	vector<Mat> m_rvecsMat;// 每幅图像的平移向量
 
-	vector<vector<Point3f>> m_object_points; // 每幅图像中角点的三维坐标
+	vector<vector<Point3f>> m_object_points;// 每幅图像中角点的三维坐标
 	vector<int> m_point_counts;// 每幅图像中角点的数量
 
 	Mat m_rotation_matrix;// 保存每幅图像的旋转矩阵
