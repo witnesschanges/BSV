@@ -7,6 +7,7 @@
 #include "MVGigE.h"
 #include "MVImage.h"
 #include "FeatureDetect.h"
+#include "Camera.h"
 #include "mscomm.h"
 #include "opencv2/opencv.hpp"
 #include "opencv2/core/core.hpp"
@@ -26,27 +27,6 @@ const string RightCameraCalibrationResultText = "RCamera_caliberation_result.txt
 const UINT_PTR FirstTimerId = 1;
 const UINT_PTR SecondTimerId = 2;
 const UINT CircleDetectTimerElapse = 300;
-
-enum CameraType
-{
-	Left,
-	Right
-};
-
-class Camera
-{
-public:
-	void Initial();
-public:
-	HANDLE CameraHandle;//相机句柄
-	CameraType type; // todo: 用enum类型替换flag
-	CCriticalSection Section;//相机采图临界区
-	CCriticalSection SectionCopy;//相机采图临界区
-	int ImageIndex;//相机采集图片序号标志
-	//CPtrArray BlobSeq;
-	CArray<Blob> BlobSeq;//记录相机圆形特征中心坐标
-	MV_PixelFormatEnums PixelFormat;//相机图像格式
-};
 
 class Image
 {

@@ -894,7 +894,7 @@ void Image::Initial()
 void Image::InitialBmpInfo()
 {
 	BmpInfo = (LPBITMAPINFO) new
-		char[sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256];		//设置图像信息头
+		char[sizeof(BITMAPINFOHEADER) + sizeof(RGBQUAD) * 256];//设置图像信息头
 	BmpInfo->bmiHeader.biBitCount = 8;
 	BmpInfo->bmiHeader.biClrImportant = 0;
 	BmpInfo->bmiHeader.biClrUsed = 0;
@@ -913,12 +913,6 @@ void Image::InitialBmpInfo()
 		BmpInfo->bmiColors[i].rgbRed = i;
 		BmpInfo->bmiColors[i].rgbReserved = 0;
 	}
-}
-
-void Camera::Initial()
-{
-	CameraHandle = NULL;
-	ImageIndex = 0;
 }
 
 void Calibration::Initial()
