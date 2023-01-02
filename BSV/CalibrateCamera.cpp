@@ -11,9 +11,18 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "CalibrateCamera.h"
 
-CameraCalibration::CameraCalibration()
+CameraCalibration::CameraCalibration(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height) : m_fin(ifstream(pic_Path)), m_fout(ofstream(cali_Result))
 {
-	m_image_count = 0;  //图像数量
+	m_pic_Path = pic_Path;
+	m_cali_Result = cali_Result;
+
+	m_board_size = Size(row_corner_num, column_corner_num);
+	m_square_size = Size(grid_width, grid_height);
+
+	m_image_count = 0;
+	m_cameraMatrix = Mat(3, 3, CV_32FC1, Scalar::all(0));
+	m_distCoeffs = Mat(1, 5, CV_32FC1, Scalar::all(0));
+
 }
 
 void CameraCalibration::DrawCorners(Mat imageInput, bool patternWasFound, string banner)
@@ -24,12 +33,12 @@ void CameraCalibration::DrawCorners(Mat imageInput, bool patternWasFound, string
 	waitKey(500);
 }
 
-void CameraCalibration::StartRecoginzeCorner(ifstream& fin, ofstream& fout)
+void CameraCalibration::StartRecoginzeCorner()
 {
 	string filename;
 	int success_count;
 	string banner = "相机标定";
-	while (getline(fin, filename))
+	while (getline(m_fin, filename))
 	{
 		Mat imageInput = imread(filename);
 		if (m_image_count == 0)  //以读入的第一张图片宽高代表图片组的宽高
@@ -98,7 +107,7 @@ void CameraCalibration::PrintCornerCoordinates()
 	//}
 }
 
-vector<vector<Point3f>> CameraCalibration::InitialCornerCorodinates(Size square_size)
+vector<vector<Point3f>> CameraCalibration::InitialCornerCorodinates()
 {
 	vector<vector<Point3f>> object_points;
 	int i, j, t;
@@ -111,8 +120,8 @@ vector<vector<Point3f>> CameraCalibration::InitialCornerCorodinates(Size square_
 			{
 				Point3f realPoint;
 				/* 假设标定板放在世界坐标系中z=0的平面上 */
-				realPoint.x = i * square_size.width;
-				realPoint.y = j * square_size.height;
+				realPoint.x = i * m_square_size.width;
+				realPoint.y = j * m_square_size.height;
 				realPoint.z = 0;
 				tempPointSet.push_back(realPoint);
 			}
@@ -132,8 +141,7 @@ vector<int> CameraCalibration::InitialCornerCounts()
 	return point_counts;
 }
 
-void CameraCalibration::EvaluateCalibrationResults(vector<int> point_counts, vector<vector<Point3f>> object_points, vector<Mat> tvecsMat,
-	vector<Mat> rvecsMat, Mat cameraMatrix, Mat distCoeffs, ofstream& fout)
+void CameraCalibration::EvaluateCalibrationResults(vector<int> point_counts, vector<vector<Point3f>> object_points)
 {
 	double total_err = 0.0; // 所有图像的平均误差的总和
 	double err = 0.0; // 每幅图像的平均误差
@@ -143,7 +151,7 @@ void CameraCalibration::EvaluateCalibrationResults(vector<int> point_counts, vec
 	{
 		vector<Point3f> tempPointSet = object_points[i];
 		/* 通过得到的摄像机内外参数，对空间的三维点进行重新投影计算，得到新的投影点 */
-		projectPoints(tempPointSet, rvecsMat[i], tvecsMat[i], cameraMatrix, distCoeffs, image_points2);
+		projectPoints(tempPointSet, m_rvecsMat[i], m_tvecsMat[i], m_cameraMatrix, m_distCoeffs, image_points2);
 		/* 计算新的投影点和旧的投影点之间的误差*/
 		vector<Point2f> tempImagePoint = m_image_points_seq[i];
 		Mat tempImagePointMat = Mat(1, tempImagePoint.size(), CV_32FC2);
@@ -157,10 +165,10 @@ void CameraCalibration::EvaluateCalibrationResults(vector<int> point_counts, vec
 		//norm函数其实把两个通道分别分开来计算的(X1-X2)^2的值，然后统一求和，最后进行根号
 		total_err += err /= point_counts[i];
 		std::cout << "第" << i + 1 << "幅图像的平均误差：" << err << "像素" << endl;
-		fout << "第" << i + 1 << "幅图像的平均误差：" << err << "像素" << endl;
+		m_fout << "第" << i + 1 << "幅图像的平均误差：" << err << "像素" << endl;
 	}
 	std::cout << "总体平均误差：" << total_err / m_image_count << "像素" << endl;
-	fout << "总体平均误差：" << total_err / m_image_count << "像素" << endl << endl;
+	m_fout << "总体平均误差：" << total_err / m_image_count << "像素" << endl << endl;
 }
 
 void CameraCalibration::SaveCalibrationResults()
@@ -168,54 +176,46 @@ void CameraCalibration::SaveCalibrationResults()
 
 }
 
-void CameraCalibration::CalibrateCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+void CameraCalibration::CalibrateCamera()
 {
-	ifstream fin(pic_Path);//存在空白行会报错
-	ofstream fout(cali_Result);
-	m_board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
-
 	cout << "*** 开始识别角点 ***" << endl;
-	StartRecoginzeCorner(fin, fout);
+	StartRecoginzeCorner();
 
 	PrintCornerCoordinates();
 
 	//以下是摄像机标定
 	cout << "\n*** 开始标定 ***" << endl;
-	vector<vector<Point3f>> object_points = InitialCornerCorodinates(Size(grid_width, grid_height)); // 每幅图像中角点的三维坐标
+	vector<vector<Point3f>> object_points = InitialCornerCorodinates(); // 每幅图像中角点的三维坐标
 	vector<int> point_counts = InitialCornerCounts();// 每幅图像中角点的数量
 	/*内外参数*/
-	Mat cameraMatrix = Mat(3, 3, CV_32FC1, Scalar::all(0)); // 摄像机内参数矩阵
-	Mat distCoeffs = Mat(1, 5, CV_32FC1, Scalar::all(0)); // 摄像机的5个畸变系数：k1, k2, p1, p2, k3
-	vector<Mat> tvecsMat;  // 每幅图像的旋转向量
-	vector<Mat> rvecsMat; // 每幅图像的平移向量
-	calibrateCamera(object_points, m_image_points_seq, m_image_size, cameraMatrix, distCoeffs, rvecsMat, tvecsMat, 0);
+	calibrateCamera(object_points, m_image_points_seq, m_image_size, m_cameraMatrix, m_distCoeffs, m_rvecsMat, m_tvecsMat, 0);
 	cout << "标定完成！" << endl;
 
 	//对标定结果进行评价
 	cout << "*** 开始评价标定结果 ***\n";
-	EvaluateCalibrationResults(point_counts, object_points, tvecsMat, rvecsMat, cameraMatrix, distCoeffs, fout);
+	EvaluateCalibrationResults(point_counts, object_points);
 	std::cout << "*** 评价完成！***" << endl;
 
 	//保存标定结果  	
 	std::cout << "*** 开始保存标定结果 ***" << endl;
 	Mat rotation_matrix = Mat(3, 3, CV_32FC1, Scalar::all(0)); // 保存每幅图像的旋转矩阵
-	fout << "相机内参数矩阵：" << endl;
-	fout << cameraMatrix << endl << endl;
-	fout << "畸变系数：\n";
-	fout << distCoeffs << endl << endl << endl;
+	m_fout << "相机内参数矩阵：" << endl;
+	m_fout << m_cameraMatrix << endl << endl;
+	m_fout << "畸变系数：\n";
+	m_fout << m_distCoeffs << endl << endl << endl;
 	for (int i = 0; i < m_image_count; i++)
 	{
-		fout << "第" << i + 1 << "幅图像的旋转向量：" << endl;
-		fout << tvecsMat[i] << endl;
+		m_fout << "第" << i + 1 << "幅图像的旋转向量：" << endl;
+		m_fout << m_tvecsMat[i] << endl;
 		/* 将旋转向量转换为相对应的旋转矩阵 */
-		Rodrigues(tvecsMat[i], rotation_matrix);
-		fout << "第" << i + 1 << "幅图像的旋转矩阵：" << endl;
-		fout << rotation_matrix << endl;
-		fout << "第" << i + 1 << "幅图像的平移向量：" << endl;
-		fout << rvecsMat[i] << endl << endl;
+		Rodrigues(m_tvecsMat[i], rotation_matrix);
+		m_fout << "第" << i + 1 << "幅图像的旋转矩阵：" << endl;
+		m_fout << rotation_matrix << endl;
+		m_fout << "第" << i + 1 << "幅图像的平移向量：" << endl;
+		m_fout << m_rvecsMat[i] << endl << endl;
 	}
 	std::cout << "***完成保存***" << endl;
-	fout << endl;
+	m_fout << endl;
 	/* 显示标定结果  */
 	Mat mapx = Mat(m_image_size, CV_32FC1);
 	Mat mapy = Mat(m_image_size, CV_32FC1);
@@ -226,7 +226,7 @@ void CameraCalibration::CalibrateCamera(string pic_Path, string cali_Result, int
 	for (int i = 0; i != m_image_count; i++)
 	{
 		std::cout << "图片" << i + 1 << "保存成功！" << endl;
-		initUndistortRectifyMap(cameraMatrix, distCoeffs, R, cameraMatrix, m_image_size, CV_32FC1, mapx, mapy);
+		initUndistortRectifyMap(m_cameraMatrix, m_distCoeffs, R, m_cameraMatrix, m_image_size, CV_32FC1, mapx, mapy);
 		StrStm.clear();
 		imageFileName.clear();
 		string filePath = "Ori_LImage\\chess";
@@ -237,7 +237,7 @@ void CameraCalibration::CalibrateCamera(string pic_Path, string cali_Result, int
 		Mat imageSource = imread(filePath);
 		Mat newimage = imageSource.clone();
 		//另一种不需要转换矩阵的方式
-		//undistort(imageSource,newimage,cameraMatrix,distCoeffs);
+		//undistort(imageSource,newimage,m_cameraMatrix,m_distCoeffs);
 		remap(imageSource, newimage, mapx, mapy, INTER_LINEAR);
 		namedWindow("原始图像", WINDOW_NORMAL);//将显示图像可放大缩小
 		imshow("原始图像", imageSource);
