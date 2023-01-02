@@ -4,6 +4,8 @@ using namespace cv;
 class CameraCalibration
 {
 public:
+	CameraCalibration();
+
 	/*
 	*函数说明：完成左相机标定
 	*输入参数：
@@ -19,18 +21,27 @@ public:
 	void CalibrateCamera(string pic_Path, string cali_Result, int row_corner_num,
 		int column_corner_num, double grid_width, double grid_height);
 
-	void DrawCorners(Mat imageInput, Size board_size, vector<Point2f> image_points_buf, bool patternWasFound, string banner);
+	void DrawCorners(Mat imageInput, bool patternWasFound, string banner);
 
-	void StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size image_size, Size board_size, vector<vector<Point2f>> image_points_seq);
+	void StartRecoginzeCorner(ifstream& fin, ofstream& fout);
 
-	void PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_points_seq);
+	void PrintCornerCoordinates();
 
-	vector<vector<Point3f>> InitialCornerCorodinates(int image_count, Size board_size, Size square_size);
+	vector<vector<Point3f>> InitialCornerCorodinates(Size square_size);
 
-	vector<int> InitialCornerCounts(int image_count, Size board_size);
+	vector<int> InitialCornerCounts();
 
-	void EvaluateCalibrationResults(int image_count, vector<int> point_counts, vector<vector<Point3f>> object_points, vector<Mat> tvecsMat,
-		vector<Mat> rvecsMat, Mat cameraMatrix, Mat distCoeffs, vector<vector<Point2f>> image_points_seq, ofstream& fout);
+	void EvaluateCalibrationResults(vector<int> point_counts, vector<vector<Point3f>> object_points, vector<Mat> tvecsMat,
+		vector<Mat> rvecsMat, Mat cameraMatrix, Mat distCoeffs, ofstream& fout);
 
 	void SaveCalibrationResults();
+
+public:
+	string m_pic_Path;
+	Size m_image_size;
+	Size m_board_size;// 标定板上每行、列的角点数
+	vector<Point2f> m_image_points_buf;// 缓存每幅图像上检测到的角点
+	vector<vector<Point2f>> m_image_points_seq;// 保存检测到的所有角点
+	int m_image_count;//图像数量
+
 };
