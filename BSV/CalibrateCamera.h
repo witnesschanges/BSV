@@ -25,3 +25,8 @@ void PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_point
 vector<vector<Point3f>> InitialCornerCorodinates(int image_count, Size board_size, Size square_size);
 
 vector<int> InitialCornerCounts(int image_count, Size board_size);
+
+void EvaluateCalibrationResults(int image_count, vector<int> point_counts, vector<vector<Point3f>> object_points, vector<Mat> tvecsMat,
+	vector<Mat> rvecsMat, Mat cameraMatrix, Mat distCoeffs, vector<vector<Point2f>> image_points_seq, ofstream& fout);
+
+void SaveCalibrationResults();

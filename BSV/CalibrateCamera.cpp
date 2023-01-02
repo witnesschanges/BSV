@@ -128,42 +128,13 @@ vector<int> InitialCornerCounts(int image_count, Size board_size)
 	return point_counts;
 }
 
-void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+void EvaluateCalibrationResults(int image_count, vector<int> point_counts, vector<vector<Point3f>> object_points, vector<Mat> tvecsMat,
+	vector<Mat> rvecsMat, Mat cameraMatrix, Mat distCoeffs, vector<vector<Point2f>> image_points_seq, ofstream& fout)
 {
-	ifstream fin(pic_Path);//存在空白行会报错
-	ofstream fout(cali_Result);
-	Size image_size;
-	Size board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
-	vector<Point2f> image_points_buf;  // 缓存每幅图像上检测到的角点
-	vector<vector<Point2f>> image_points_seq; // 保存检测到的所有角点
-	int image_count = 0;  //图像数量
-
-	cout << "*** 开始识别角点 ***" << endl;
-	StartRecoginzeCorner(fin, fout, image_count, image_size, board_size, image_points_seq);
-
-	PrintCornerCoordinates(board_size, image_points_seq);
-
-	//以下是摄像机标定
-	cout << "\n***开始标定***" << endl;
-	vector<vector<Point3f>> object_points = InitialCornerCorodinates(image_count, board_size, Size(grid_width, grid_height)); // 每幅图像中角点的三维坐标
-	vector<int> point_counts = InitialCornerCounts(image_count, board_size);// 每幅图像中角点的数量
-
-	/*内外参数*/
-	Mat cameraMatrix = Mat(3, 3, CV_32FC1, Scalar::all(0)); // 摄像机内参数矩阵
-	Mat distCoeffs = Mat(1, 5, CV_32FC1, Scalar::all(0)); // 摄像机的5个畸变系数：k1,k2,p1,p2,k3
-	vector<Mat> tvecsMat;  // 每幅图像的旋转向量
-	vector<Mat> rvecsMat; // 每幅图像的平移向量
-	
-	/* 开始标定 */
-	calibrateCamera(object_points, image_points_seq, image_size, cameraMatrix, distCoeffs, rvecsMat, tvecsMat, 0);
-	cout << "标定完成！" << endl;
-	//对标定结果进行评价
-	cout << "***开始评价标定结果***\n";
 	double total_err = 0.0; // 所有图像的平均误差的总和
 	double err = 0.0; // 每幅图像的平均误差
 	vector<Point2f> image_points2; // 保存重新计算得到的投影点
-	cout << "->每幅图像的标定误差：\n";
-	fout << "->每幅图像的标定误差：\n";
+
 	for (int i = 0; i < image_count; i++)
 	{
 		vector<Point3f> tempPointSet = object_points[i];
@@ -186,9 +157,47 @@ void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, 
 	}
 	std::cout << "总体平均误差：" << total_err / image_count << "像素" << endl;
 	fout << "总体平均误差：" << total_err / image_count << "像素" << endl << endl;
-	std::cout << "***评价完成！***" << endl;
+}
+
+void SaveCalibrationResults()
+{
+
+}
+
+void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+{
+	ifstream fin(pic_Path);//存在空白行会报错
+	ofstream fout(cali_Result);
+	Size image_size;
+	Size board_size = Size(row_corner_num, column_corner_num);// 标定板上每行、列的角点数
+	vector<Point2f> image_points_buf;  // 缓存每幅图像上检测到的角点
+	vector<vector<Point2f>> image_points_seq; // 保存检测到的所有角点
+	int image_count = 0;  //图像数量
+
+	cout << "*** 开始识别角点 ***" << endl;
+	StartRecoginzeCorner(fin, fout, image_count, image_size, board_size, image_points_seq);
+
+	PrintCornerCoordinates(board_size, image_points_seq);
+
+	//以下是摄像机标定
+	cout << "\n*** 开始标定 ***" << endl;
+	vector<vector<Point3f>> object_points = InitialCornerCorodinates(image_count, board_size, Size(grid_width, grid_height)); // 每幅图像中角点的三维坐标
+	vector<int> point_counts = InitialCornerCounts(image_count, board_size);// 每幅图像中角点的数量
+	/*内外参数*/
+	Mat cameraMatrix = Mat(3, 3, CV_32FC1, Scalar::all(0)); // 摄像机内参数矩阵
+	Mat distCoeffs = Mat(1, 5, CV_32FC1, Scalar::all(0)); // 摄像机的5个畸变系数：k1, k2, p1, p2, k3
+	vector<Mat> tvecsMat;  // 每幅图像的旋转向量
+	vector<Mat> rvecsMat; // 每幅图像的平移向量
+	calibrateCamera(object_points, image_points_seq, image_size, cameraMatrix, distCoeffs, rvecsMat, tvecsMat, 0);
+	cout << "标定完成！" << endl;
+
+	//对标定结果进行评价
+	cout << "*** 开始评价标定结果 ***\n";
+	EvaluateCalibrationResults(image_count, point_counts, object_points, tvecsMat, rvecsMat, cameraMatrix, distCoeffs, image_points_seq, fout);
+	std::cout << "*** 评价完成！***" << endl;
+
 	//保存标定结果  	
-	std::cout << "***开始保存标定结果***" << endl;
+	std::cout << "*** 开始保存标定结果 ***" << endl;
 	Mat rotation_matrix = Mat(3, 3, CV_32FC1, Scalar::all(0)); // 保存每幅图像的旋转矩阵
 	fout << "相机内参数矩阵：" << endl;
 	fout << cameraMatrix << endl << endl;
@@ -243,6 +252,6 @@ void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, 
 		string SavefilePath = "Save_LImage\\" + imageFileName;	//保存图像路径
 		imwrite(SavefilePath, newimage);
 	}
-	std::cout << "***保存结束***" << endl;
+	std::cout << "*** 保存结束 ***" << endl;
 	return;
 }

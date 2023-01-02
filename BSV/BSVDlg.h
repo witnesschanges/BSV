@@ -15,7 +15,6 @@
 using namespace std;
 using namespace cv;
 
-
 const int WaitOutTime = 3000;
 const float pi = 3.141592653;
 const int PictureControlWidth = 520;
