@@ -11,7 +11,7 @@
 #include "opencv2/highgui/highgui.hpp"
 #include "CalibrateCamera.h"
 
-void DrawCorners(Mat imageInput, Size board_size, vector<Point2f> image_points_buf, bool patternWasFound, string banner)
+void CameraCalibration::DrawCorners(Mat imageInput, Size board_size, vector<Point2f> image_points_buf, bool patternWasFound, string banner)
 {
 	drawChessboardCorners(imageInput, board_size, image_points_buf, patternWasFound); //用于在图片中标记角点
 	namedWindow(banner, WINDOW_NORMAL);
@@ -19,7 +19,7 @@ void DrawCorners(Mat imageInput, Size board_size, vector<Point2f> image_points_b
 	waitKey(500);
 }
 
-void StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size image_size, Size board_size, vector<vector<Point2f>> image_points_seq)
+void CameraCalibration::StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size image_size, Size board_size, vector<vector<Point2f>> image_points_seq)
 {
 	string filename;
 	int success_count;
@@ -59,7 +59,7 @@ void StartRecoginzeCorner(ifstream& fin, ofstream& fout, int image_count, Size i
 	}
 }
 
-void PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_points_seq)
+void CameraCalibration::PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_points_seq)
 {
 	int CornerNum = board_size.width * board_size.height;  //每张图片上总的角点数
 	int total = image_points_seq.size();
@@ -94,7 +94,7 @@ void PrintCornerCoordinates(Size board_size, vector<vector<Point2f>> image_point
 	//}
 }
 
-vector<vector<Point3f>> InitialCornerCorodinates(int image_count, Size board_size, Size square_size)
+vector<vector<Point3f>> CameraCalibration::InitialCornerCorodinates(int image_count, Size board_size, Size square_size)
 {
 	vector<vector<Point3f>> object_points;
 	int i, j, t;
@@ -118,7 +118,7 @@ vector<vector<Point3f>> InitialCornerCorodinates(int image_count, Size board_siz
 	return object_points;
 }
 
-vector<int> InitialCornerCounts(int image_count, Size board_size)
+vector<int> CameraCalibration::InitialCornerCounts(int image_count, Size board_size)
 {
 	vector<int> point_counts;
 	for (int i = 0; i < image_count; i++)
@@ -128,7 +128,7 @@ vector<int> InitialCornerCounts(int image_count, Size board_size)
 	return point_counts;
 }
 
-void EvaluateCalibrationResults(int image_count, vector<int> point_counts, vector<vector<Point3f>> object_points, vector<Mat> tvecsMat,
+void CameraCalibration::EvaluateCalibrationResults(int image_count, vector<int> point_counts, vector<vector<Point3f>> object_points, vector<Mat> tvecsMat,
 	vector<Mat> rvecsMat, Mat cameraMatrix, Mat distCoeffs, vector<vector<Point2f>> image_points_seq, ofstream& fout)
 {
 	double total_err = 0.0; // 所有图像的平均误差的总和
@@ -159,12 +159,12 @@ void EvaluateCalibrationResults(int image_count, vector<int> point_counts, vecto
 	fout << "总体平均误差：" << total_err / image_count << "像素" << endl << endl;
 }
 
-void SaveCalibrationResults()
+void CameraCalibration::SaveCalibrationResults()
 {
 
 }
 
-void CalibrationCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
+void CameraCalibration::CalibrateCamera(string pic_Path, string cali_Result, int row_corner_num, int column_corner_num, double grid_width, double grid_height)
 {
 	ifstream fin(pic_Path);//存在空白行会报错
 	ofstream fout(cali_Result);
